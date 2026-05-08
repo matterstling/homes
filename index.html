@@ -359,7 +359,7 @@ function render() {
   // Must-haves
   html += `<div class="section-hdr">Must-haves — Pass / Fail</div>`;
   if (mobile) {
-    html += `<div class="must-col-hdr-row">
+    html += `<div class="must-col-hdr-row" style="display:none;">
       <div class="col-hdr">${MUST_LABELS.fail[1]} Fail</div>
       <div class="col-hdr">${MUST_LABELS.pass[1]} Pass</div>
     </div>`;
@@ -374,7 +374,7 @@ function render() {
       </div>`;
     });
   } else {
-    html += `<div class="col-hdr-row">
+    html += `<div class="col-hdr-row" style="display: none;">
       <div class="col-hdr left">Criteria</div>
       <div class="col-hdr"></div>
       <div class="col-hdr">${MUST_LABELS.fail[0]}</div>
@@ -400,13 +400,13 @@ function render() {
       curSection = c.section;
       html += `<div class="section-hdr">${curSection}</div>`;
       if (mobile) {
-        html += `<div class="score-col-hdr-row">
+        html += `<div class="score-col-hdr-row" style="display:none;">
           <div class="col-hdr">${SCORE_LABELS[0][1]}</div>
           <div class="col-hdr">${SCORE_LABELS[1][1]}</div>
           <div class="col-hdr">${SCORE_LABELS[2][1]}</div>
         </div>`;
       } else {
-        html += `<div class="col-hdr-row">
+        html += `<div class="col-hdr-row" style="display:none;">
           <div class="col-hdr left">Criteria</div>
           <div class="col-hdr">Weight</div>
           <div class="col-hdr">${SCORE_LABELS[0][0]}</div>
