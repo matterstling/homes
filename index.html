@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home Scorecard — Erstling</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #F7F4EF;
+      --surface: #FFFFFF;
+      --surface2: #F0EDE7;
+      --border: #E2DDD6;
+      --border-mid: #C8C2B8;
+      --text: #1C1917;
+      --text-mid: #6B6560;
+      --text-light: #9C9690;
+      --green-bg: #EAF3DE;
+      --green-text: #3B6D11;
+      --green-border: #639922;
+      --amber-bg: #FAEEDA;
+      --amber-text: #854F0B;
+      --amber-border: #BA7517;
+      --red-bg: #FAECE7;
+      --red-text: #993C1D;
+      --red-border: #D85A30;
+      --purple-bg: #EEEDFE;
+      --purple-text: #534AB7;
+      --purple-border: #7F77DD;
+      --radius: 6px;
+      --radius-lg: 10px;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Password overlay ── */
+    #overlay { position: fixed; inset: 0; z-index: 1000; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+    .lock-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2.5rem 2rem; width: 100%; max-width: 320px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,0.07); }
+    .lock-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .lock-title { font-family: 'DM Serif Display', serif; font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .lock-sub { font-size: 13px; color: var(--text-mid); margin-bottom: 1.5rem; }
+    .lock-input { width: 100%; padding: 10px 14px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 15px; background: var(--bg); color: var(--text); margin-bottom: 10px; outline: none; text-align: center; letter-spacing: 0.1em; }
+    .lock-input:focus { border-color: var(--purple-border); }
+    .lock-btn { width: 100%; padding: 10px; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
+    .lock-btn:hover { opacity: 0.85; }
+    .lock-error { font-size: 12px; color: var(--red-text); margin-top: 8px; display: none; }
+
+    /* ── App shell ── */
+    #app { display: none; max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+    header { margin-bottom: 2rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+    h1 { font-family: 'DM Serif Display', serif; font-size: 1.75rem; font-weight: 400; }
+    .header-sub { font-size: 13px; color: var(--text-mid); margin-top: 4px; }
+    .sync-status { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+    .sync-status.syncing { color: var(--amber-text); }
+    .sync-status.error   { color: var(--red-text); }
+    .sync-status.ok      { color: var(--green-text); }
+
+    /* ── Tabs ── */
+    .tab-bar { display: flex; gap: 4px; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
+    .tab { font-size: 13px; font-weight: 500; padding: 8px 16px; border: none; background: transparent; cursor: pointer; color: var(--text-mid); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s, border-color 0.15s; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--text); border-bottom-color: var(--text); }
+
+    /* ── Property input ── */
+    .prop-row { display: flex; gap: 8px; margin-bottom: 1.5rem; align-items: center; flex-wrap: nowrap; }
+    .prop-row input { flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--surface); color: var(--text); outline: none; }
+    .prop-row input:focus { border-color: var(--purple-border); }
+    .btn { flex-shrink: 0; white-space: nowrap; height: 38px; padding: 0 14px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--surface); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-mid); transition: background 0.1s, color 0.1s; }
+    .btn:hover { background: var(--surface2); color: var(--text); }
+    .btn-primary { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .btn-primary:hover { opacity: 0.85; color: var(--bg); background: var(--text); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Section headers ── */
+    .section-hdr { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); margin: 2rem 0 0.5rem; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+
+    /* ── Desktop: 5-col grid ── */
+    .col-hdr-row, .must-row, .score-row { display: grid; grid-template-columns: 1fr 80px 90px 90px 90px; gap: 0; align-items: center; padding: 7px 10px; }
+    .col-hdr-row { padding: 4px 10px; }
+    .must-row:hover, .score-row:hover { background: var(--surface2); border-radius: var(--radius); }
+    .col-hdr { font-size: 11px; font-weight: 500; color: var(--text-light); text-align: center; }
+    .col-hdr.left { text-align: left; }
+    .criteria-name { font-size: 13px; color: var(--text); line-height: 1.4; padding-right: 8px; }
+
+    /* ── Weight badge ── */
+    .badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; text-align: center; white-space: nowrap; width: fit-content; margin: 0 auto; }
+    .badge-high { background: var(--amber-bg); color: var(--amber-text); }
+    .badge-low  { background: var(--green-bg);  color: var(--green-text); }
+
+    /* ── Criterion buttons ── */
+    .must-btn, .score-btn { width: 78px; height: 30px; border-radius: var(--radius); border: 1px solid var(--border-mid); background: transparent; cursor: pointer; font-size: 12px; font-weight: 500; color: var(--text-mid); display: flex; align-items: center; justify-content: center; margin: 0 auto; white-space: nowrap; gap: 4px; transition: background 0.1s, border-color 0.1s, color 0.1s; }
+    .must-btn:hover, .score-btn:hover { background: var(--surface2); }
+    .must-btn.active-pass { background: var(--green-bg) !important; color: var(--green-text) !important; border: 2px solid var(--green-border) !important; font-weight: 600; }
+    .must-btn.active-fail { background: var(--red-bg)   !important; color: var(--red-text)   !important; border: 2px solid var(--red-border)   !important; font-weight: 600; }
+    .score-btn.active-1  { background: var(--red-bg)    !important; color: var(--red-text)   !important; border: 2px solid var(--red-border)   !important; font-weight: 600; }
+    .score-btn.active-2  { background: var(--amber-bg)  !important; color: var(--amber-text) !important; border: 2px solid var(--amber-border) !important; font-weight: 600; }
+    .score-btn.active-3  { background: var(--green-bg)  !important; color: var(--green-text) !important; border: 2px solid var(--green-border) !important; font-weight: 600; }
+
+    /* ── Status banners ── */
+    .banner { font-size: 13px; border-radius: var(--radius); padding: 9px 14px; margin-top: 10px; display: none; line-height: 1.5; }
+    .banner-fail { background: var(--red-bg);   color: var(--red-text); }
+    .banner-pass { background: var(--green-bg); color: var(--green-text); }
+
+    /* ── Summary bar ── */
+    .summary { display: flex; gap: 0; margin-top: 1.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .summary-cell { flex: 1; text-align: center; padding: 1rem 0.5rem; border-right: 1px solid var(--border); }
+    .summary-cell:last-child { border-right: none; }
+    .summary-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--text); }
+    .summary-lbl { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+
+    /* ── Notes ── */
+    .notes-wrap { margin-top: 1.25rem; }
+    .notes-label { font-size: 12px; color: var(--text-mid); margin-bottom: 5px; }
+    textarea { width: 100%; min-height: 64px; padding: 9px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 13px; background: var(--surface); color: var(--text); resize: vertical; outline: none; }
+    textarea:focus { border-color: var(--purple-border); }
+
+    /* ── Compare cards ── */
+    .compare-grid { display: grid; gap: 12px; }
+    .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; }
+    .compare-card.top-pick   { border-color: var(--purple-border); }
+    .compare-card.eliminated { border-color: var(--red-border); }
+    .card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .card-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+    .card-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .card-score { font-size: 1.3rem; font-weight: 600; }
+    .bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; margin-bottom: 6px; }
+    .bar-fill { height: 6px; border-radius: 3px; transition: width 0.4s ease; }
+    .card-meta  { font-size: 12px; color: var(--text-light); }
+    .card-fails { font-size: 12px; color: var(--red-text); margin-top: 4px; }
+    .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; font-style: italic; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 500; }
+    .tag-top  { background: var(--purple-bg); color: var(--purple-text); }
+    .tag-elim { background: var(--red-bg);    color: var(--red-text); }
+    .small-btn { font-size: 11px; padding: 3px 10px; border-radius: var(--radius); border: 1px solid var(--border-mid); background: transparent; cursor: pointer; color: var(--text-mid); font-family: 'DM Sans', sans-serif; }
+    .small-btn:hover { background: var(--surface2); }
+    .small-btn.del { border-color: var(--red-border); color: var(--red-text); }
+    .small-btn.del:hover { background: var(--red-bg); }
+    .empty-state { font-size: 13px; color: var(--text-light); margin-top: 1rem; }
+
+    /* ── Toast ── */
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; padding: 9px 18px; border-radius: var(--radius); display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      #app { padding: 1.25rem 1rem 4rem; }
+      h1 { font-size: 1.4rem; }
+
+      .must-col-hdr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 4px 10px; }
+      .must-row { display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px; }
+      .must-row .criteria-name { padding-right: 0; }
+      .must-row .must-btns-mobile { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+      .must-btn { width: 100%; margin: 0; font-size: 16px; height: 36px; }
+
+      .score-col-hdr-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; padding: 4px 10px; }
+      .score-row { display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px 10px; }
+      .score-row .criteria-name { padding-right: 0; }
+      .score-row .score-btns-mobile { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+      .score-btn { width: 100%; margin: 0; font-size: 16px; height: 36px; }
+
+      .summary { flex-wrap: wrap; }
+      .summary-cell { flex: 0 0 50%; border-right: none !important; border-bottom: 1px solid var(--border); }
+      .summary-cell:nth-child(3), .summary-cell:nth-child(4) { border-bottom: none; }
+      .summary-cell:nth-child(odd) { border-right: 1px solid var(--border) !important; }
+      .summary-val { font-size: 1.3rem; }
+
+      .btn { padding: 0 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="overlay">
+  <div class="lock-card">
+    <div class="lock-icon">🏡</div>
+    <div class="lock-title">Home Scorecard</div>
+    <div class="lock-sub">Erstling family — Seattle home search</div>
+    <input class="lock-input" type="password" id="pwInput" placeholder="password" autocomplete="off" />
+    <button class="lock-btn" onclick="checkPassword()">Enter</button>
+    <div class="lock-error" id="pwError">Incorrect password</div>
+  </div>
+</div>
+
+<div id="app">
+  <header>
+    <h1>Home Scorecard</h1>
+    <div class="header-sub">Queen Anne &amp; Magnolia · Seattle single-family home search</div>
+    <div class="sync-status" id="syncStatus">Loading data…</div>
+  </header>
+
+  <div class="tab-bar">
+    <button class="tab active" onclick="switchTab('score')">Score a home</button>
+    <button class="tab" onclick="switchTab('compare')">Compare</button>
+  </div>
+
+  <div id="scorePanel">
+    <div class="prop-row">
+      <input type="text" id="propName" placeholder="Address or nickname" />
+      <button class="btn btn-primary" id="saveBtn" onclick="saveProperty()">Save ↗</button>
+      <button class="btn" onclick="clearForm()">Clear</button>
+    </div>
+    <div id="criteriaList"></div>
+    <div class="banner banner-fail" id="failWarn"></div>
+    <div class="banner banner-pass" id="gatePass">✓ All must-haves pass — home is eligible for scoring.</div>
+    <div class="summary">
+      <div class="summary-cell"><div class="summary-val" id="totalScore">—</div><div class="summary-lbl">Weighted score</div></div>
+      <div class="summary-cell"><div class="summary-val" id="maxScore">—</div><div class="summary-lbl">Max possible</div></div>
+      <div class="summary-cell"><div class="summary-val" id="pctScore">—</div><div class="summary-lbl">% of max</div></div>
+      <div class="summary-cell"><div class="summary-val" id="ratedCount">0/16</div><div class="summary-lbl">Prefs rated</div></div>
+    </div>
+    <div class="notes-wrap">
+      <div class="notes-label">Notes</div>
+      <textarea id="notesArea" placeholder="Gut feel, things to follow up on, what stood out..."></textarea>
+    </div>
+  </div>
+
+  <div id="comparePanel" style="display:none">
+    <div id="compareList"></div>
+    <div class="empty-state" id="compareEmpty">No saved properties yet. Score and save homes in the Score tab to compare them here.</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PASSWORD  = '2026';
+const WORKER_URL = 'https://homes-api.matt-erstling.workers.dev';
+
+// Button labels: [desktop, mobile]
+const MUST_LABELS = {
+  fail: ['❌ Fail', '❌'],
+  pass: ['✅ Pass', '✅'],
+};
+const SCORE_LABELS = [
+  ['👎 Below', '👎'],
+  ['👍 Meets', '👍'],
+  ['❇️ Exceeds', '❇️'],
+];
+
+function checkPassword() {
+  if (document.getElementById('pwInput').value === PASSWORD) {
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadFromGitHub();
+  } else {
+    document.getElementById('pwError').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+    document.getElementById('pwInput').focus();
+  }
+}
+document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+
+const mustHaves = [
+  { id:'sfh',                  name:'Single-family home (not a townhouse)' },
+  { id:'neighborhood',         name:'Queen Anne or Magnolia neighborhood' },
+  { id:'bedrooms',             name:'4+ bedrooms, 3 on the same floor' },
+  { id:'bathrooms',            name:'2.5+ bathrooms' },
+  { id:'garage_min',           name:'At least 1-car garage' },
+  { id:'sqft',                 name:'2,400+ sq ft' },
+  { id:'open_floor',           name:'Open floor plan on main level' },
+  { id:'outdoor_entertaining', name:'Outdoor entertaining space (any)' },
+  { id:'move_in',              name:'Move-in ready or recently remodeled' },
+  { id:'school_zone',          name:'Zoned for Coe or Magnolia Elementary' },
+  { id:'block_value',          name:'Not significantly the nicest home on block' },
+  { id:'park_access',          name:'Yard or short walk to park' },
+];
+
+const scored = [
+  { id:'bath_3',          name:'3+ bathrooms',                                    weight:'high', section:'Strong Preferences' },
+  { id:'sqft_2600',       name:'2,600+ sq ft',                                    weight:'high', section:'Strong Preferences' },
+  { id:'outdoor_kitchen', name:'Outdoor entertaining off the kitchen',             weight:'high', section:'Strong Preferences' },
+  { id:'outdoor_privacy', name:'Outdoor privacy (yard + street-facing)',           weight:'high', section:'Strong Preferences' },
+  { id:'garage_2car',     name:'2-car garage (cars, gym/storage, or both)',        weight:'high', section:'Strong Preferences' },
+  { id:'flex_room',       name:'Flex/bonus room for play + secondary living',      weight:'high', section:'Strong Preferences' },
+  { id:'two_offices',     name:'Two separate office-capable spaces',               weight:'high', section:'Strong Preferences' },
+  { id:'yard_catch',      name:'Yard large enough for catch, fenced',             weight:'high', section:'Strong Preferences' },
+  { id:'layout',          name:'Layout quality (flow, light, livability)',         weight:'high', section:'Strong Preferences' },
+  { id:'condition',       name:'Newer construction or meaningfully updated',       weight:'high', section:'Strong Preferences' },
+  { id:'no_carpet',       name:'No carpet (or carpet limited to bedrooms)',        weight:'high', section:'Strong Preferences' },
+  { id:'queen_anne',      name:'Queen Anne over Magnolia',                         weight:'high', section:'Strong Preferences' },
+  { id:'adu',             name:'ADU or DADU on property',                          weight:'low',  section:'Nice to Haves' },
+  { id:'gym',             name:'Dedicated gym beyond the garage',                  weight:'low',  section:'Nice to Haves' },
+  { id:'curb_appeal',     name:'Strong curb appeal',                               weight:'low',  section:'Nice to Haves' },
+  { id:'walkable',        name:'Walkable to neighborhood village/town center',     weight:'low',  section:'Nice to Haves' },
+];
+
+const weightMap   = { high: 2, low: 1 };
+const weightLabel = { high: 'High', low: 'Low' };
+const weightClass = { high: 'badge-high', low: 'badge-low' };
+
+let mustScores = {}, prefScores = {}, savedProperties = [], ghFileSha = null;
+const isMobile = () => window.innerWidth <= 600;
+
+function setSyncStatus(msg, cls) {
+  const el = document.getElementById('syncStatus');
+  el.textContent = msg;
+  el.className = 'sync-status ' + (cls || '');
+}
+
+async function loadFromGitHub() {
+  setSyncStatus('Loading saved homes…', 'syncing');
+  try {
+    const res = await fetch(WORKER_URL);
+    if (res.status === 404) {
+      ghFileSha = null; savedProperties = [];
+      setSyncStatus('No saved data yet — scores will be created on first save.', '');
+      renderCompare(); render(); return;
+    }
+    if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+    const json = await res.json();
+    ghFileSha = json.sha;
+    const decoded = JSON.parse(atob(json.content.replace(/\n/g, '')));
+    savedProperties = decoded.properties || [];
+    setSyncStatus(`Last synced: ${new Date().toLocaleTimeString()}`, 'ok');
+    renderCompare(); render();
+  } catch(e) {
+    setSyncStatus(`Failed to load — ${e.message}`, 'error');
+    savedProperties = []; render();
+  }
+}
+
+async function saveToGitHub() {
+  const payload = { properties: savedProperties };
+  const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
+  const body = { message: 'chore: update home scores [skip ci]', content: encoded };
+  if (ghFileSha) body.sha = ghFileSha;
+  const res = await fetch(WORKER_URL, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) { const err = await res.json(); throw new Error(err.message || `GitHub API error: ${res.status}`); }
+  const json = await res.json();
+  ghFileSha = json.content.sha;
+  setSyncStatus(`Last synced: ${new Date().toLocaleTimeString()}`, 'ok');
+}
+
+document.getElementById('criteriaList').addEventListener('click', function(e) {
+  const mb = e.target.closest('button.must-btn');
+  const sb = e.target.closest('button.score-btn');
+  if (mb) {
+    const id = mb.dataset.id, val = mb.dataset.val;
+    mustScores[id] = mustScores[id] === val ? undefined : val;
+    render();
+  } else if (sb) {
+    const id = sb.dataset.id, val = parseInt(sb.dataset.val);
+    prefScores[id] = prefScores[id] === val ? undefined : val;
+    render();
+  }
+});
+
+function render() {
+  const list = document.getElementById('criteriaList');
+  const mobile = isMobile();
+  let html = '';
+
+  // Must-haves
+  html += `<div class="section-hdr">Must-haves — Pass / Fail</div>`;
+  if (mobile) {
+    html += `<div class="must-col-hdr-row">
+      <div class="col-hdr">${MUST_LABELS.fail[1]} Fail</div>
+      <div class="col-hdr">${MUST_LABELS.pass[1]} Pass</div>
+    </div>`;
+    mustHaves.forEach(c => {
+      const sel = mustScores[c.id];
+      html += `<div class="must-row">
+        <div class="criteria-name">${c.name}</div>
+        <div class="must-btns-mobile">
+          <button class="must-btn ${sel==='fail'?'active-fail':''}" data-id="${c.id}" data-val="fail">${MUST_LABELS.fail[1]}</button>
+          <button class="must-btn ${sel==='pass'?'active-pass':''}" data-id="${c.id}" data-val="pass">${MUST_LABELS.pass[1]}</button>
+        </div>
+      </div>`;
+    });
+  } else {
+    html += `<div class="col-hdr-row">
+      <div class="col-hdr left">Criteria</div>
+      <div class="col-hdr"></div>
+      <div class="col-hdr">${MUST_LABELS.fail[0]}</div>
+      <div class="col-hdr"></div>
+      <div class="col-hdr">${MUST_LABELS.pass[0]}</div>
+    </div>`;
+    mustHaves.forEach(c => {
+      const sel = mustScores[c.id];
+      html += `<div class="must-row">
+        <div class="criteria-name">${c.name}</div>
+        <div></div>
+        <div><button class="must-btn ${sel==='fail'?'active-fail':''}" data-id="${c.id}" data-val="fail">${MUST_LABELS.fail[0]}</button></div>
+        <div></div>
+        <div><button class="must-btn ${sel==='pass'?'active-pass':''}" data-id="${c.id}" data-val="pass">${MUST_LABELS.pass[0]}</button></div>
+      </div>`;
+    });
+  }
+
+  // Scored sections
+  let curSection = '';
+  scored.forEach(c => {
+    if (c.section !== curSection) {
+      curSection = c.section;
+      html += `<div class="section-hdr">${curSection}</div>`;
+      if (mobile) {
+        html += `<div class="score-col-hdr-row">
+          <div class="col-hdr">${SCORE_LABELS[0][1]}</div>
+          <div class="col-hdr">${SCORE_LABELS[1][1]}</div>
+          <div class="col-hdr">${SCORE_LABELS[2][1]}</div>
+        </div>`;
+      } else {
+        html += `<div class="col-hdr-row">
+          <div class="col-hdr left">Criteria</div>
+          <div class="col-hdr">Weight</div>
+          <div class="col-hdr">${SCORE_LABELS[0][0]}</div>
+          <div class="col-hdr">${SCORE_LABELS[1][0]}</div>
+          <div class="col-hdr">${SCORE_LABELS[2][0]}</div>
+        </div>`;
+      }
+    }
+    const sel = prefScores[c.id] || 0;
+    if (mobile) {
+      html += `<div class="score-row">
+        <div class="criteria-name">${c.name}</div>
+        <div class="score-btns-mobile">
+          ${[1,2,3].map((n,i) => `<button class="score-btn ${sel===n?'active-'+n:''}" data-id="${c.id}" data-val="${n}">${SCORE_LABELS[i][1]}</button>`).join('')}
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="score-row">
+        <div class="criteria-name">${c.name}</div>
+        <div><span class="badge ${weightClass[c.weight]}">${weightLabel[c.weight]}</span></div>
+        ${[1,2,3].map((n,i) => `<div><button class="score-btn ${sel===n?'active-'+n:''}" data-id="${c.id}" data-val="${n}">${SCORE_LABELS[i][0]}</button></div>`).join('')}
+      </div>`;
+    }
+  });
+
+  list.innerHTML = html;
+  updateSummary();
+}
+
+window.addEventListener('resize', () => render());
+
+function updateSummary() {
+  const failed = mustHaves.filter(c => mustScores[c.id] === 'fail').map(c => c.name);
+  const allPassed = mustHaves.every(c => mustScores[c.id] === 'pass');
+  const fw = document.getElementById('failWarn'), gp = document.getElementById('gatePass');
+  if (failed.length) {
+    fw.style.display = 'block'; fw.innerHTML = '⚠ Fails must-have(s): ' + failed.join(', ');
+    gp.style.display = 'none';
+  } else if (allPassed) {
+    fw.style.display = 'none'; gp.style.display = 'block';
+  } else {
+    fw.style.display = 'none'; gp.style.display = 'none';
+  }
+  let total = 0, maxTotal = 0, rated = 0;
+  scored.forEach(c => {
+    const w = weightMap[c.weight]; maxTotal += 3 * w;
+    if (prefScores[c.id]) { total += prefScores[c.id] * w; rated++; }
+  });
+  document.getElementById('totalScore').textContent = total;
+  document.getElementById('maxScore').textContent = maxTotal;
+  document.getElementById('pctScore').textContent = rated ? Math.round(total/maxTotal*100)+'%' : '—';
+  document.getElementById('ratedCount').textContent = rated+'/'+scored.length;
+}
+
+async function saveProperty() {
+  const name = document.getElementById('propName').value.trim() || 'Unnamed property';
+  const notes = document.getElementById('notesArea').value.trim();
+  const failedMust = mustHaves.filter(c => mustScores[c.id] === 'fail').map(c => c.name);
+  let total = 0, maxTotal = 0;
+  scored.forEach(c => { const w=weightMap[c.weight]; maxTotal+=3*w; if(prefScores[c.id]) total+=prefScores[c.id]*w; });
+  const entry = { name, mustScores:{...mustScores}, prefScores:{...prefScores}, total, maxTotal, pct:Math.round(total/maxTotal*100), notes, failedMust };
+  const idx = savedProperties.findIndex(p=>p.name===name);
+  if (idx>=0) savedProperties[idx]=entry; else savedProperties.push(entry);
+  const btn = document.getElementById('saveBtn');
+  btn.disabled=true; btn.textContent='Saving…';
+  setSyncStatus('Saving to GitHub…', 'syncing');
+  try {
+    await saveToGitHub();
+    renderCompare();
+    showToast('Saved "'+name+'"');
+    btn.textContent='Saved ✓';
+    setTimeout(()=>{ btn.textContent='Save ↗'; btn.disabled=false; }, 1500);
+  } catch(e) {
+    setSyncStatus('Save failed — '+e.message, 'error');
+    showToast('Save failed: '+e.message);
+    btn.textContent='Save ↗'; btn.disabled=false;
+  }
+}
+
+function clearForm() {
+  mustScores={}; prefScores={};
+  document.getElementById('propName').value='';
+  document.getElementById('notesArea').value='';
+  render();
+}
+
+function loadProperty(name) {
+  const p=savedProperties.find(x=>x.name===name); if(!p) return;
+  mustScores={...p.mustScores}; prefScores={...p.prefScores};
+  document.getElementById('propName').value=p.name;
+  document.getElementById('notesArea').value=p.notes||'';
+  switchTab('score'); render();
+}
+
+async function deleteProperty(name) {
+  savedProperties=savedProperties.filter(p=>p.name!==name);
+  setSyncStatus('Saving to GitHub…','syncing');
+  try { await saveToGitHub(); renderCompare(); showToast('Deleted "'+name+'"'); }
+  catch(e) { setSyncStatus('Delete failed — '+e.message,'error'); }
+}
+
+function renderCompare() {
+  const panel=document.getElementById('compareList'), empty=document.getElementById('compareEmpty');
+  if (!savedProperties.length) { panel.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const sorted=[...savedProperties].sort((a,b)=>a.failedMust.length!==b.failedMust.length?a.failedMust.length-b.failedMust.length:b.pct-a.pct);
+  panel.innerHTML='';
+  const grid=document.createElement('div'); grid.className='compare-grid';
+  sorted.forEach((p,i)=>{
+    const card=document.createElement('div'); card.className='compare-card';
+    const failed=p.failedMust.length>0;
+    if (!failed&&i===0&&sorted.length>1) card.classList.add('top-pick');
+    if (failed) card.classList.add('eliminated');
+    const barColor=failed?'var(--red-border)':'var(--purple-border)';
+    const scoreColor=failed?'var(--red-text)':'var(--text)';
+    const topTag=!failed&&i===0&&sorted.length>1?`<span class="tag tag-top">Top pick</span> `:'';
+    const elimTag=failed?`<span class="tag tag-elim">Eliminated</span> `:'';
+    const safeName=p.name.replace(/'/g,"\\'");
+    card.innerHTML=`
+      <div class="card-header">
+        <div class="card-name">${elimTag}${topTag}${p.name}</div>
+        <div class="card-actions">
+          <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
+          <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
+          <div class="card-score" style="color:${scoreColor}">${failed?'—':p.pct+'%'}</div>
+        </div>
+      </div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
+      <div class="card-meta">${failed?'Does not qualify':p.total+' / '+p.maxTotal+' points'}</div>
+      ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
+      ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
+    `;
+    grid.appendChild(card);
+  });
+  panel.appendChild(grid);
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.style.display='block';
+  setTimeout(()=>t.style.display='none',2200);
+}
+
+function switchTab(tab) {
+  document.getElementById('scorePanel').style.display=tab==='score'?'block':'none';
+  document.getElementById('comparePanel').style.display=tab==='compare'?'block':'none';
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&tab==='score')||(i===1&&tab==='compare')));
+}
+</script>
+</body>
+</html>
