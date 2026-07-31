@@ -1,46 +1,6 @@
 {
   "properties": [
     {
-      "name": "Gerry 13th Ave 2M",
-      "mustScores": {
-        "sfh": "pass",
-        "neighborhood": "pass",
-        "bedrooms": "pass",
-        "bathrooms": "pass",
-        "garage_min": "pass",
-        "sqft": "pass",
-        "open_floor": "pass",
-        "outdoor_entertaining": "pass",
-        "move_in": "pass",
-        "school_zone": "pass",
-        "block_value": "pass",
-        "park_access": "pass"
-      },
-      "prefScores": {
-        "bath_3": 2,
-        "sqft_2600": 3,
-        "outdoor_kitchen": 1,
-        "outdoor_privacy": 2,
-        "garage_2car": 1,
-        "flex_room": 3,
-        "two_offices": 3,
-        "yard_catch": 1,
-        "layout": 3,
-        "condition": 3,
-        "no_carpet": 2,
-        "queen_anne": 2,
-        "adu": 2,
-        "curb_appeal": 3,
-        "walkable": 1,
-        "gym": 1
-      },
-      "total": 59,
-      "maxTotal": 84,
-      "pct": 70,
-      "notes": "At $2m, itâs the leader in the clubhouse. Great open floor plan, tons of light, lots of space. Very thoughtfully laid out.",
-      "failedMust": []
-    },
-    {
       "name": "Greek House 2.45M",
       "mustScores": {
         "sfh": "pass",
