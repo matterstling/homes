@@ -67,6 +67,9 @@
     /* ── Property input ── */
     .prop-row { display: flex; gap: 8px; margin-bottom: 1.5rem; align-items: center; flex-wrap: nowrap; }
     .prop-row input { flex: 1; min-width: 0; padding: 9px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--surface); color: var(--text); outline: none; }
+    .price-wrap { display: flex; align-items: center; gap: 6px; }
+    .price-prefix { font-size: 14px; color: var(--text-mid); }
+    .price-input { flex: 0 0 140px; width: 140px; padding: 9px 12px; border: 1px solid var(--border-mid); border-radius: var(--radius); font-family: 'DM Sans', sans-serif; font-size: 14px; background: var(--surface); color: var(--text); outline: none; }
     .prop-row input:focus { border-color: var(--purple-border); }
     .btn { flex-shrink: 0; white-space: nowrap; height: 38px; padding: 0 14px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--surface); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--text-mid); transition: background 0.1s, color 0.1s; }
     .btn:hover { background: var(--surface2); color: var(--text); }
@@ -197,6 +200,10 @@
 
   <div id="scorePanel">
     <div class="prop-row">
+      <div class="price-wrap">
+        <div class="price-prefix">$</div>
+          <input type="text" id="priceInput" class="price-input" placeholder="List price" inputmode="numeric" pattern="[0-9,]*" />
+      </div>
       <input type="text" id="propName" placeholder="Address or nickname" />
       <button class="btn btn-primary" id="saveBtn" onclick="saveProperty()">Save ↗</button>
       <button class="btn" onclick="clearForm()">Clear</button>
@@ -207,6 +214,8 @@
     <div class="summary">
       <div class="summary-cell"><div class="summary-val" id="totalScore">—</div><div class="summary-lbl">Weighted score</div></div>
       <div class="summary-cell"><div class="summary-val" id="maxScore">—</div><div class="summary-lbl">Max possible</div></div>
+      <div class="summary-cell"><div class="summary-val" id="priceM">—</div><div class="summary-lbl">Price ($M)</div></div>
+      <div class="summary-cell"><div class="summary-val" id="fvq">—</div><div class="summary-lbl">Fit-Value Quotient</div></div>
       <div class="summary-cell"><div class="summary-val" id="pctScore">—</div><div class="summary-lbl">% of max</div></div>
       <div class="summary-cell"><div class="summary-val" id="ratedCount">0/16</div><div class="summary-lbl">Prefs rated</div></div>
     </div>
@@ -455,10 +464,25 @@ function updateSummary() {
     const w = weightMap[c.weight]; maxTotal += 3 * w;
     if (prefScores[c.id]) { total += prefScores[c.id] * w; rated++; }
   });
+  // Price input (assumed $) and FVQ calculation
+  const priceVal = parsePriceValue();
+  const pct = rated ? Math.round(total / maxTotal * 100) : 0;
+  const priceMEl = document.getElementById('priceM');
+  const fvqEl = document.getElementById('fvq');
+  if (priceVal && priceVal > 0) {
+    priceMEl.textContent = (priceVal / 1000000).toFixed(2);
+    // FVQ = (fit percentage * 10,000,000) / price
+    const fvqVal = priceVal > 0 && pct > 0 ? (pct * 10000000 / priceVal) : null;
+    fvqEl.textContent = fvqVal !== null ? fvqVal.toFixed(2) : '—';
+  } else {
+    priceMEl.textContent = '—';
+    fvqEl.textContent = '—';
+  }
+
   document.getElementById('totalScore').textContent = total;
   document.getElementById('maxScore').textContent = maxTotal;
-  document.getElementById('pctScore').textContent = rated ? Math.round(total/maxTotal*100)+'%' : '—';
-  document.getElementById('ratedCount').textContent = rated+'/'+scored.length;
+  document.getElementById('pctScore').textContent = rated ? pct + '%' : '—';
+  document.getElementById('ratedCount').textContent = rated + '/' + scored.length;
 }
 
 async function saveProperty() {
@@ -467,7 +491,8 @@ async function saveProperty() {
   const failedMust = mustHaves.filter(c => mustScores[c.id] === 'fail').map(c => c.name);
   let total = 0, maxTotal = 0;
   scored.forEach(c => { const w=weightMap[c.weight]; maxTotal+=3*w; if(prefScores[c.id]) total+=prefScores[c.id]*w; });
-  const entry = { name, mustScores:{...mustScores}, prefScores:{...prefScores}, total, maxTotal, pct:Math.round(total/maxTotal*100), notes, failedMust };
+  const price = parsePriceValue();
+  const entry = { name, mustScores:{...mustScores}, prefScores:{...prefScores}, total, maxTotal, pct:Math.round(total/maxTotal*100), notes, failedMust, price };
   const idx = savedProperties.findIndex(p=>p.name===name);
   if (idx>=0) savedProperties[idx]=entry; else savedProperties.push(entry);
   const btn = document.getElementById('saveBtn');
@@ -498,6 +523,7 @@ function loadProperty(name) {
   mustScores={...p.mustScores}; prefScores={...p.prefScores};
   document.getElementById('propName').value=p.name;
   document.getElementById('notesArea').value=p.notes||'';
+  document.getElementById('priceInput').value = p.price != null ? Number(p.price).toLocaleString() : '';
   switchTab('score'); render();
 }
 
@@ -525,6 +551,11 @@ function renderCompare() {
     const topTag=!failed&&i===0&&sorted.length>1?`<span class="tag tag-top">Top pick</span> `:'';
     const elimTag=failed?`<span class="tag tag-elim">Eliminated</span> `:'';
     const safeName=p.name.replace(/'/g,"\\'");
+    // compute price display and FVQ for compare cards
+    const priceStr = p.price ? '$' + (p.price/1000000).toFixed(2) + 'M' : '—';
+    const fvqVal = (p.price && p.price > 0 && p.pct) ? (p.pct * 10000000 / p.price) : null;
+    const fvqStr = fvqVal !== null ? fvqVal.toFixed(2) : '—';
+
     card.innerHTML=`
       <div class="card-header">
         <div class="card-name">${elimTag}${topTag}${p.name}</div>
@@ -535,7 +566,7 @@ function renderCompare() {
         </div>
       </div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
-      <div class="card-meta">${failed?'Does not qualify':p.total+' / '+p.maxTotal+' points'}</div>
+      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · ' + priceStr + ' · FVQ: ' + fvqStr)}</div>
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
     `;
@@ -549,6 +580,32 @@ function showToast(msg) {
   t.textContent=msg; t.style.display='block';
   setTimeout(()=>t.style.display='none',2200);
 }
+
+// Price input formatting helpers
+function parsePriceValue() {
+  const raw = document.getElementById('priceInput').value || '';
+  const digits = raw.toString().replace(/,/g,'').replace(/[^0-9.]/g,'');
+  const num = digits === '' ? null : Number(digits);
+  return Number.isFinite(num) ? num : null;
+}
+
+function formatPriceInputValue() {
+  const el = document.getElementById('priceInput');
+  const raw = el.value || '';
+  const digits = raw.toString().replace(/[^0-9]/g,'');
+  if (digits === '') { el.value = ''; return; }
+  // prevent leading zeros
+  const n = Number(digits);
+  el.value = n.toLocaleString();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pi = document.getElementById('priceInput');
+  if (pi) {
+    pi.addEventListener('input', formatPriceInputValue);
+    pi.addEventListener('blur', formatPriceInputValue);
+  }
+});
 
 function switchTab(tab) {
   document.getElementById('scorePanel').style.display=tab==='score'?'block':'none';
