@@ -81,47 +81,6 @@
       "failedMust": []
     },
     {
-      "name": "Greek House ($2.45M)",
-      "mustScores": {
-        "sfh": "pass",
-        "neighborhood": "pass",
-        "bedrooms": "pass",
-        "bathrooms": "pass",
-        "garage_min": "pass",
-        "sqft": "pass",
-        "open_floor": "pass",
-        "outdoor_entertaining": "pass",
-        "move_in": "pass",
-        "school_zone": "pass",
-        "block_value": "pass",
-        "park_access": "pass"
-      },
-      "prefScores": {
-        "bath_3": 3,
-        "sqft_2600": 3,
-        "outdoor_kitchen": 2,
-        "outdoor_privacy": 3,
-        "garage_2car": 1,
-        "flex_room": 3,
-        "two_offices": 2,
-        "yard_catch": 2,
-        "layout": 2,
-        "condition": 2,
-        "no_carpet": 2,
-        "queen_anne": 2,
-        "adu": 3,
-        "gym": 2,
-        "curb_appeal": 1,
-        "walkable": 2
-      },
-      "total": 62,
-      "maxTotal": 84,
-      "pct": 74,
-      "price": 1750000,
-      "notes": "This place is so interesting!",
-      "failedMust": []
-    },
-    {
       "name": "Greek House",
       "mustScores": {
         "sfh": "pass",
