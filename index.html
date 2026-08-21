@@ -30,6 +30,7 @@
       --purple-bg: #EEEDFE;
       --purple-text: #534AB7;
       --purple-border: #7F77DD;
+      --neutral-dark: #141414;
       --radius: 6px;
       --radius-lg: 10px;
     }
@@ -133,13 +134,27 @@
     .bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; margin-bottom: 6px; }
     .bar-fill { height: 6px; border-radius: 3px; transition: width 0.4s ease; }
     .bar-wrap { position: relative; }
-    .fvq-marker { position: absolute; left: 100%; transform: translateX(-50%); top: -6px; bottom: -6px; width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px; }
-    .bar-fill.fvq-high { background: var(--purple-border) !important; }
+    .bar-fill.fvq-high { background: var(--purple-border) !important; box-shadow: 0 0 12px rgba(127,119,221,0.28); }
     .bar-fill.fvq-near { background: var(--amber-border) !important; }
+    .bar-fill.fvq-neutral { background: var(--neutral-dark) !important; }
     .bar-fill.fvq-low  { background: #BDBDBD !important; opacity: 0.6; }
-    .card-score.fvq-high { font-size: 1.6rem; color: var(--purple-text); font-weight: 700; }
+    .compare-card.eliminated .bar-fill { background: var(--red-border) !important; }
+    .card-score.fvq-high { font-size: 1.6rem; color: var(--purple-text); font-weight: 700; text-shadow: 0 0 8px rgba(127,119,221,0.18); }
     .card-score.fvq-near { color: var(--amber-text); font-weight: 700; }
+    .card-score.fvq-neutral { color: var(--neutral-dark); font-weight: 700; }
     .card-score.fvq-low  { color: var(--text-light); opacity: 0.6; }
+    /* name link / arrow styling */
+    .name-link { color: var(--text); cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
+    .name-link .arrow { font-weight: 300; font-size: 1.05rem; margin-left: 0; opacity: 0.9; transform: translateY(-1px); }
+
+    /* modal */
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 1600; }
+    .modal.show { display: flex; }
+    .modal-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.36); }
+    .modal-dialog { position: relative; background: var(--surface); padding: 16px; border-radius: var(--radius-lg); width: 340px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); z-index: 1601; }
+    .modal-title { font-weight: 700; margin-bottom: 8px; }
+    .modal-body { color: var(--text-mid); margin-bottom: 12px; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
     .card-meta  { font-size: 12px; color: var(--text-light); }
     .card-fails { font-size: 12px; color: var(--red-text); margin-top: 4px; }
     .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; font-style: italic; }
@@ -557,7 +572,7 @@ function renderCompare() {
   empty.style.display='none';
   // compute FVQ for each property and sort by FVQ desc (failed must-haves go last)
   const withFvq = savedProperties.map(p => {
-    const failed = p.failedMust && p.failedMust.length > 0;
+    const failedMust = p.failedMust && p.failedMust.length > 0;
     const pct = Number.isFinite(p.pct) ? p.pct : 0; // percent
     const priceM = p.price ? (p.price / 1000000) : null;
     let fvq = null;
@@ -565,7 +580,9 @@ function renderCompare() {
       // FVQ = (pct^2) / (price_in_millions^2) / 12.5
       fvq = (Math.pow(pct, 2) / (priceM * priceM)) / 12.5;
     }
-    return { ...p, _fvq: fvq, _failed: failed, _priceM: priceM };
+    // eliminate if any must-have failed OR FVQ is computed and below 60
+    const failedByFvq = fvq !== null && fvq < 60;
+    return { ...p, _fvq: fvq, _failed: (failedMust || failedByFvq), _priceM: priceM };
   });
   const sorted = withFvq.sort((a,b) => {
     const af = Number.isFinite(a._fvq) ? a._fvq : -Infinity;
@@ -590,23 +607,25 @@ function renderCompare() {
     const fvqVal = Number.isFinite(p._fvq) ? p._fvq : null;
     const fvqDisplay = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
     const fvqPct = fvqVal !== null ? Math.min(100, Math.round(fvqVal)) : 0;
-    // categorize FVQ for styling
+    // categorize FVQ for styling using ranges: <60 eliminated, 60-<75 low, 75-<90 neutral, 90-<100 near, 100+ high
     let fvqCat = 'normal';
     if (fvqVal !== null) {
       if (fvqVal >= 100) fvqCat = 'high';
       else if (fvqVal >= 90) fvqCat = 'near';
-      else if (fvqVal < 70) fvqCat = 'low';
+      else if (fvqVal >= 75) fvqCat = 'neutral';
+      else if (fvqVal >= 60) fvqCat = 'low';
+      else fvqCat = 'low';
     }
 
     card.innerHTML=`
       <div class="card-header">
-        <div class="card-name">${elimTag}${topTag}${p.name}${priceLabel}<span class="name-link" onclick="loadProperty('${safeName}')" title="Edit">→</span></div>
+        <div class="card-name"><a class="name-link" onclick="loadProperty('${safeName}')" title="Edit">${elimTag}${topTag}${p.name}${priceLabel}<span class="arrow">⟶</span></a></div>
         <div class="card-actions">
           <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
           <button class="small-btn del" onclick="confirmDelete('${safeName}')">🗑️</button>
         </div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:fvqPct}%;background:${barColor}"></div><div class="fvq-marker" aria-hidden="true"></div></div>
+      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:fvqPct}%;"></div></div>
       <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—'))}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
