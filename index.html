@@ -538,12 +538,28 @@ function renderCompare() {
   const panel=document.getElementById('compareList'), empty=document.getElementById('compareEmpty');
   if (!savedProperties.length) { panel.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  const sorted=[...savedProperties].sort((a,b)=>a.failedMust.length!==b.failedMust.length?a.failedMust.length-b.failedMust.length:b.pct-a.pct);
+  // compute FVQ for each property and sort by FVQ desc (failed must-haves go last)
+  const withFvq = savedProperties.map(p => {
+    const failed = p.failedMust && p.failedMust.length > 0;
+    const pct = Number.isFinite(p.pct) ? p.pct : 0; // percent
+    const priceM = p.price ? (p.price / 1000000) : null;
+    let fvq = null;
+    if (!failed && priceM && priceM > 0 && pct > 0) {
+      // FVQ = pct / (price_in_millions ^ 2)
+      fvq = pct / (priceM * priceM);
+    }
+    return { ...p, _fvq: fvq, _failed: failed, _priceM: priceM };
+  });
+  const sorted = withFvq.sort((a,b) => {
+    const af = Number.isFinite(a._fvq) ? a._fvq : -Infinity;
+    const bf = Number.isFinite(b._fvq) ? b._fvq : -Infinity;
+    return bf - af;
+  });
   panel.innerHTML='';
   const grid=document.createElement('div'); grid.className='compare-grid';
   sorted.forEach((p,i)=>{
     const card=document.createElement('div'); card.className='compare-card';
-    const failed=p.failedMust.length>0;
+    const failed=p._failed;
     if (!failed&&i===0&&sorted.length>1) card.classList.add('top-pick');
     if (failed) card.classList.add('eliminated');
     const barColor=failed?'var(--red-border)':'var(--purple-border)';
@@ -551,24 +567,26 @@ function renderCompare() {
     const topTag=!failed&&i===0&&sorted.length>1?`<span class="tag tag-top">Top pick</span> `:'';
     const elimTag=failed?`<span class="tag tag-elim">Eliminated</span> `:'';
     const safeName=p.name.replace(/'/g,"\\'");
-    // compute price display and FVQ for compare cards
-    const priceStr = p.price ? '$' + (p.price/1000000).toFixed(2) + 'M' : '—';
-    const fvqVal = (p.price && p.price > 0 && p.pct) ? (p.pct * 10000000 / p.price) : null;
-    const fvqStr = fvqVal !== null ? fvqVal.toFixed(2) : '—';
+    // display price (millions) and FVQ (integer, no decimals)
+    const priceM = Number.isFinite(p._priceM) ? p._priceM : null;
+    const priceLabel = priceM ? ` ($${priceM.toFixed(1)}M)` : '';
+    const fvqVal = Number.isFinite(p._fvq) ? p._fvq : null;
+    const fvqDisplay = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
 
     card.innerHTML=`
       <div class="card-header">
-        <div class="card-name">${elimTag}${topTag}${p.name}</div>
+        <div class="card-name">${elimTag}${topTag}${p.name}${priceLabel}</div>
         <div class="card-actions">
           <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
           <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
-          <div class="card-score" style="color:${scoreColor}">${failed?'—':p.pct+'%'}</div>
+          <div class="card-score" style="color:${scoreColor}">${failed ? '—' : fvqDisplay}</div>
         </div>
       </div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
-      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · ' + priceStr + ' · FVQ: ' + fvqStr)}</div>
-      ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
+      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points')}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
+      <div class="card-meta">Fit: ${p.pct ? p.pct + '%' : '—'}</div>
+      ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
     `;
     grid.appendChild(card);
   });
