@@ -576,7 +576,7 @@ function renderCompare() {
     const pct = Number.isFinite(p.pct) ? p.pct : 0; // percent
     const priceM = p.price ? (p.price / 1000000) : null;
     let fvq = null;
-    if (!failed && priceM && priceM > 0 && pct > 0) {
+    if (!failedMust && priceM && priceM > 0 && pct > 0) {
       // FVQ = (pct^2) / (price_in_millions^2) / 12.5
       fvq = (Math.pow(pct, 2) / (priceM * priceM)) / 12.5;
     }
