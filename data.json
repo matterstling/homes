@@ -1,7 +1,7 @@
 {
   "properties": [
     {
-      "name": "Folz House ($2.3M)",
+      "name": "Greek House",
       "mustScores": {
         "sfh": "pass",
         "neighborhood": "pass",
@@ -17,31 +17,32 @@
         "park_access": "pass"
       },
       "prefScores": {
-        "bath_3": 1,
-        "sqft_2600": 2,
+        "bath_3": 3,
+        "sqft_2600": 3,
         "outdoor_kitchen": 2,
         "outdoor_privacy": 3,
-        "garage_2car": 2,
-        "flex_room": 2,
+        "garage_2car": 1,
+        "flex_room": 3,
         "two_offices": 2,
         "yard_catch": 2,
         "layout": 2,
         "condition": 2,
         "no_carpet": 2,
         "queen_anne": 2,
-        "adu": 1,
-        "gym": 1,
-        "curb_appeal": 2,
-        "walkable": 1
+        "adu": 3,
+        "gym": 2,
+        "curb_appeal": 1,
+        "walkable": 2
       },
-      "total": 53,
+      "total": 62,
       "maxTotal": 84,
-      "pct": 63,
-      "notes": "Didn't feel quite like us",
-      "failedMust": []
+      "pct": 74,
+      "notes": "This place is so interesting!",
+      "failedMust": [],
+      "price": 2300000
     },
     {
-      "name": "Gerry 13th Ave ($2M)",
+      "name": "Gerry 13th Ave TH",
       "mustScores": {
         "sfh": "pass",
         "neighborhood": "pass",
@@ -78,10 +79,11 @@
       "maxTotal": 84,
       "pct": 70,
       "notes": "At $2m, it's the leader in the clubhouse. Great open floor plan, tons of light, lots of space. Very thoughtfully laid out.",
-      "failedMust": []
+      "failedMust": [],
+      "price": 2000000
     },
     {
-      "name": "Greek House ($2.45M)",
+      "name": "Folz House",
       "mustScores": {
         "sfh": "pass",
         "neighborhood": "pass",
@@ -97,29 +99,29 @@
         "park_access": "pass"
       },
       "prefScores": {
-        "bath_3": 3,
-        "sqft_2600": 3,
+        "bath_3": 1,
+        "sqft_2600": 2,
         "outdoor_kitchen": 2,
         "outdoor_privacy": 3,
-        "garage_2car": 1,
-        "flex_room": 3,
+        "garage_2car": 2,
+        "flex_room": 2,
         "two_offices": 2,
         "yard_catch": 2,
         "layout": 2,
         "condition": 2,
         "no_carpet": 2,
         "queen_anne": 2,
-        "adu": 3,
-        "gym": 2,
-        "curb_appeal": 1,
-        "walkable": 2
+        "adu": 1,
+        "gym": 1,
+        "curb_appeal": 2,
+        "walkable": 1
       },
-      "total": 62,
+      "total": 53,
       "maxTotal": 84,
-      "pct": 74,
-      "price": 1750000,
-      "notes": "This place is so interesting!",
-      "failedMust": []
+      "pct": 63,
+      "notes": "Didn't feel quite like us",
+      "failedMust": [],
+      "price": 2300000
     }
   ]
 }
