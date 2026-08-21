@@ -131,6 +131,14 @@
     .card-score { font-size: 1.3rem; font-weight: 600; }
     .bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; margin-bottom: 6px; }
     .bar-fill { height: 6px; border-radius: 3px; transition: width 0.4s ease; }
+    .bar-wrap { position: relative; }
+    .fvq-marker { position: absolute; left: 95%; top: -6px; bottom: -6px; width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px; }
+    .bar-fill.fvq-high { background: var(--purple-border) !important; }
+    .bar-fill.fvq-near { background: var(--amber-border) !important; }
+    .bar-fill.fvq-low  { background: #BDBDBD !important; opacity: 0.6; }
+    .card-score.fvq-high { font-size: 1.6rem; color: var(--purple-text); font-weight: 700; }
+    .card-score.fvq-near { color: var(--amber-text); font-weight: 700; }
+    .card-score.fvq-low  { color: var(--text-light); opacity: 0.6; }
     .card-meta  { font-size: 12px; color: var(--text-light); }
     .card-fails { font-size: 12px; color: var(--red-text); margin-top: 4px; }
     .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; font-style: italic; }
@@ -575,6 +583,13 @@ function renderCompare() {
     const priceLabel = priceM ? ` ($${priceM.toFixed(1)}M)` : '';
     const fvqVal = Number.isFinite(p._fvq) ? p._fvq : null;
     const fvqDisplay = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
+    // categorize FVQ for styling
+    let fvqCat = 'normal';
+    if (fvqVal !== null) {
+      if (fvqVal >= 100) fvqCat = 'high';
+      else if (fvqVal >= 90) fvqCat = 'near';
+      else if (fvqVal < 70) fvqCat = 'low';
+    }
 
     card.innerHTML=`
       <div class="card-header">
@@ -582,10 +597,10 @@ function renderCompare() {
         <div class="card-actions">
           <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
           <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
-          <div class="card-score" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
+          <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
         </div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
+      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:p.pct}%;background:${barColor}"></div><div class="fvq-marker" aria-hidden="true"></div></div>
       <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—'))}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
