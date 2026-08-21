@@ -73,11 +73,11 @@
         "adu": 2,
         "curb_appeal": 3,
         "walkable": 1,
-        "gym": 1
+        "gym": 2
       },
-      "total": 59,
+      "total": 60,
       "maxTotal": 84,
-      "pct": 70,
+      "pct": 71,
       "notes": "At $2m, it's the leader in the clubhouse. Great open floor plan, tons of light, lots of space. Very thoughtfully laid out.",
       "failedMust": [],
       "price": 2000000
