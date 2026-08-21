@@ -472,10 +472,11 @@ function updateSummary() {
   const priceMEl = document.getElementById('priceM');
   const fvqEl = document.getElementById('fvq');
   if (priceVal && priceVal > 0) {
-    priceMEl.textContent = (priceVal / 1000000).toFixed(2);
-    // FVQ = (fit percentage * 10,000,000) / price
-    const fvqVal = priceVal > 0 && pct > 0 ? (pct * 10000000 / priceVal) : null;
-    fvqEl.textContent = fvqVal !== null ? fvqVal.toFixed(2) : '—';
+    const priceM = priceVal / 1000000;
+    priceMEl.textContent = priceM.toFixed(2);
+    // FVQ = (pct^2) / (price_in_millions^2) / 12.5 — show as integer
+    const fvqVal = priceM > 0 && pct > 0 ? (Math.pow(pct, 2) / (priceM * priceM)) / 12.5 : null;
+    fvqEl.textContent = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
   } else {
     priceMEl.textContent = '—';
     fvqEl.textContent = '—';
@@ -547,8 +548,8 @@ function renderCompare() {
     const priceM = p.price ? (p.price / 1000000) : null;
     let fvq = null;
     if (!failed && priceM && priceM > 0 && pct > 0) {
-      // FVQ = 5 * (pct / (price_in_millions ^ 2))
-      fvq = 5 * (pct / (priceM * priceM));
+      // FVQ = (pct^2) / (price_in_millions^2) / 12.5
+      fvq = (Math.pow(pct, 2) / (priceM * priceM)) / 12.5;
     }
     return { ...p, _fvq: fvq, _failed: failed, _priceM: priceM };
   });
@@ -581,7 +582,7 @@ function renderCompare() {
         <div class="card-actions">
           <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
           <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
-          <div class="card-score" style="color:${scoreColor}"><span title="FVQ = 5 × (fit% / (price in millions)²)">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
+          <div class="card-score" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
         </div>
       </div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
