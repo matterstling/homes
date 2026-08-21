@@ -127,12 +127,13 @@
     .compare-card.eliminated { border-color: var(--red-border); }
     .card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .card-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
+    .name-link { color: var(--text-mid); cursor: pointer; margin-left: 8px; }
     .card-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
     .card-score { font-size: 1.3rem; font-weight: 600; }
     .bar-wrap { height: 6px; background: var(--surface2); border-radius: 3px; margin-bottom: 6px; }
     .bar-fill { height: 6px; border-radius: 3px; transition: width 0.4s ease; }
     .bar-wrap { position: relative; }
-    .fvq-marker { position: absolute; left: 95%; top: -6px; bottom: -6px; width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px; }
+    .fvq-marker { position: absolute; left: 100%; transform: translateX(-50%); top: -6px; bottom: -6px; width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px; }
     .bar-fill.fvq-high { background: var(--purple-border) !important; }
     .bar-fill.fvq-near { background: var(--amber-border) !important; }
     .bar-fill.fvq-low  { background: #BDBDBD !important; opacity: 0.6; }
@@ -545,6 +546,11 @@ async function deleteProperty(name) {
   catch(e) { setSyncStatus('Delete failed — '+e.message,'error'); }
 }
 
+function confirmDelete(name) {
+  const ok = confirm('Delete "' + name + '"? This cannot be undone.');
+  if (ok) deleteProperty(name);
+}
+
 function renderCompare() {
   const panel=document.getElementById('compareList'), empty=document.getElementById('compareEmpty');
   if (!savedProperties.length) { panel.innerHTML=''; empty.style.display='block'; return; }
@@ -583,6 +589,7 @@ function renderCompare() {
     const priceLabel = priceM ? ` ($${priceM.toFixed(1)}M)` : '';
     const fvqVal = Number.isFinite(p._fvq) ? p._fvq : null;
     const fvqDisplay = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
+    const fvqPct = fvqVal !== null ? Math.min(100, Math.round(fvqVal)) : 0;
     // categorize FVQ for styling
     let fvqCat = 'normal';
     if (fvqVal !== null) {
@@ -593,14 +600,13 @@ function renderCompare() {
 
     card.innerHTML=`
       <div class="card-header">
-        <div class="card-name">${elimTag}${topTag}${p.name}${priceLabel}</div>
+        <div class="card-name">${elimTag}${topTag}${p.name}${priceLabel}<span class="name-link" onclick="loadProperty('${safeName}')" title="Edit">→</span></div>
         <div class="card-actions">
-          <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
-          <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
           <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
+          <button class="small-btn del" onclick="confirmDelete('${safeName}')">🗑️</button>
         </div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:p.pct}%;background:${barColor}"></div><div class="fvq-marker" aria-hidden="true"></div></div>
+      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:fvqPct}%;background:${barColor}"></div><div class="fvq-marker" aria-hidden="true"></div></div>
       <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—'))}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
