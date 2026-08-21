@@ -142,6 +142,7 @@
     .small-btn.del { border-color: var(--red-border); color: var(--red-text); }
     .small-btn.del:hover { background: var(--red-bg); }
     .empty-state { font-size: 13px; color: var(--text-light); margin-top: 1rem; }
+    .compare-note { text-align: center; color: var(--text-mid); font-size: 13px; margin: 10px 0; }
 
     /* ── Toast ── */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; padding: 9px 18px; border-radius: var(--radius); display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
@@ -226,6 +227,7 @@
   </div>
 
   <div id="comparePanel" style="display:none">
+    <div class="compare-note">Target FVQ: <strong>100+</strong></div>
     <div id="compareList"></div>
     <div class="empty-state" id="compareEmpty">No saved properties yet. Score and save homes in the Score tab to compare them here.</div>
   </div>
@@ -545,8 +547,8 @@ function renderCompare() {
     const priceM = p.price ? (p.price / 1000000) : null;
     let fvq = null;
     if (!failed && priceM && priceM > 0 && pct > 0) {
-      // FVQ = pct / (price_in_millions ^ 2)
-      fvq = pct / (priceM * priceM);
+      // FVQ = 5 * (pct / (price_in_millions ^ 2))
+      fvq = 5 * (pct / (priceM * priceM));
     }
     return { ...p, _fvq: fvq, _failed: failed, _priceM: priceM };
   });
@@ -579,13 +581,12 @@ function renderCompare() {
         <div class="card-actions">
           <button class="small-btn" onclick="loadProperty('${safeName}')">Edit</button>
           <button class="small-btn del" onclick="deleteProperty('${safeName}')">Delete</button>
-          <div class="card-score" style="color:${scoreColor}">${failed ? '—' : fvqDisplay}</div>
+          <div class="card-score" style="color:${scoreColor}"><span title="FVQ = 5 × (fit% / (price in millions)²)">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
         </div>
       </div>
       <div class="bar-wrap"><div class="bar-fill" style="width:${failed?0:p.pct}%;background:${barColor}"></div></div>
-      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points')}</div>
+      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—'))}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
-      <div class="card-meta">Fit: ${p.pct ? p.pct + '%' : '—'}</div>
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
     `;
     grid.appendChild(card);
