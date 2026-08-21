@@ -121,6 +121,47 @@
       "notes": "At $2m, it's the leader in the clubhouse. Great open floor plan, tons of light, lots of space. Very thoughtfully laid out.",
       "failedMust": [],
       "price": 2000000
+    },
+    {
+      "name": "Folz House",
+      "mustScores": {
+        "sfh": "pass",
+        "neighborhood": "pass",
+        "bedrooms": "pass",
+        "bathrooms": "pass",
+        "garage_min": "pass",
+        "sqft": "pass",
+        "open_floor": "pass",
+        "outdoor_entertaining": "pass",
+        "move_in": "pass",
+        "school_zone": "pass",
+        "block_value": "pass",
+        "park_access": "pass"
+      },
+      "prefScores": {
+        "bath_3": 1,
+        "sqft_2600": 2,
+        "outdoor_kitchen": 2,
+        "outdoor_privacy": 3,
+        "garage_2car": 2,
+        "flex_room": 2,
+        "two_offices": 2,
+        "yard_catch": 2,
+        "layout": 2,
+        "condition": 2,
+        "no_carpet": 2,
+        "queen_anne": 2,
+        "adu": 1,
+        "gym": 1,
+        "curb_appeal": 2,
+        "walkable": 1
+      },
+      "total": 53,
+      "maxTotal": 84,
+      "pct": 63,
+      "notes": "Didn't feel quite like us",
+      "failedMust": [],
+      "price": 2300000
     }
   ]
 }
