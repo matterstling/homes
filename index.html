@@ -195,7 +195,17 @@
       .summary-val { font-size: 1.3rem; }
 
       .btn { padding: 0 10px; font-size: 12px; }
+      /* Mobile: make name full width and keep price with action buttons on same line */
+      .prop-row { flex-wrap: wrap; align-items: center; gap: 8px; }
+      .prop-row #propName { flex: 1 1 100%; order: 1; }
+      .prop-row .price-wrap { order: 2; flex: 0 0 140px; }
+      .prop-row .btn { order: 3; }
     }
+
+    /* Compare card hover and interactive styles */
+    .compare-grid { transition: all 0.18s ease; }
+    .compare-card { transition: transform 0.18s ease, box-shadow 0.18s ease; cursor: pointer; }
+    .compare-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
   </style>
 </head>
 <body>
@@ -225,11 +235,11 @@
 
   <div id="scorePanel">
     <div class="prop-row">
+      <input type="text" id="propName" placeholder="Address or nickname" />
       <div class="price-wrap">
         <div class="price-prefix">$</div>
           <input type="text" id="priceInput" class="price-input" placeholder="List price" inputmode="numeric" pattern="[0-9,]*" />
       </div>
-      <input type="text" id="propName" placeholder="Address or nickname" />
       <button class="btn btn-primary" id="saveBtn" onclick="saveProperty()">Save ↗</button>
       <button class="btn" onclick="clearForm()">Clear</button>
     </div>
@@ -622,7 +632,7 @@ function renderCompare() {
         <div class="card-name"><a class="name-link" onclick="loadProperty('${safeName}')" title="Edit">${elimTag}${topTag}${p.name}${priceLabel}<span class="arrow">⟶</span></a></div>
         <div class="card-actions">
           <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
-          <button class="small-btn del" onclick="confirmDelete('${safeName}')">🗑️</button>
+          <button class="small-btn del" onclick="event.stopPropagation(); confirmDelete('${safeName}')">🗑️</button>
         </div>
       </div>
       <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:fvqPct}%;"></div></div>
@@ -631,6 +641,11 @@ function renderCompare() {
       ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
     `;
     grid.appendChild(card);
+    // make the whole card clickable and keyboard accessible
+    card.setAttribute('onclick', `loadProperty('${safeName}')`);
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('role', 'button');
+    card.addEventListener('keydown', function(e){ if (e.key === 'Enter') loadProperty('${safeName}'); });
   });
   panel.appendChild(grid);
 }
