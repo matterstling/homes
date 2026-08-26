@@ -125,7 +125,8 @@
     .compare-grid { display: grid; gap: 12px; }
     .compare-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.1rem 1.25rem; }
     .compare-card.top-pick   { border-color: var(--purple-border); }
-    .compare-card.eliminated { border-color: var(--red-border); }
+    /* Eliminated cards: remove border highlight (no border) — badge + red FVQ indicate status */
+    .compare-card.eliminated { border: none; }
     .card-header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
     .card-name { font-family: 'DM Serif Display', serif; font-size: 1.1rem; }
     .name-link { color: var(--text-mid); cursor: pointer; margin-left: 8px; }
@@ -155,6 +156,30 @@
     .modal-title { font-weight: 700; margin-bottom: 8px; }
     .modal-body { color: var(--text-mid); margin-bottom: 12px; }
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+    /* custom tooltip for eliminated reason (faster than browser tooltip) */
+    .tag[data-tooltip] { position: relative; }
+    .tag[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      right: 0;
+      top: calc(100% + 8px);
+      background: rgba(0,0,0,0.92);
+      color: #fff;
+      padding: 6px 8px;
+      font-size: 12px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(4px);
+      pointer-events: none;
+      transition: opacity 140ms ease, transform 140ms ease;
+      z-index: 2000;
+    }
+    .tag[data-tooltip]:hover::after,
+    .tag[data-tooltip]:focus::after {
+      opacity: 1;
+      transform: translateY(0);
+    }
     .card-meta  { font-size: 12px; color: var(--text-light); }
     .card-fails { font-size: 12px; color: var(--red-text); margin-top: 4px; }
     .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; font-style: italic; }
@@ -590,9 +615,10 @@ function renderCompare() {
       // FVQ = (pct^2) / (price_in_millions^2) / 12.5
       fvq = (Math.pow(pct, 2) / (priceM * priceM)) / 12.5;
     }
-    // eliminate if any must-have failed OR FVQ is computed and below 60
+    // determine elimination reason (must-have fail or FVQ too low)
     const failedByFvq = fvq !== null && fvq < 60;
-    return { ...p, _fvq: fvq, _failed: (failedMust || failedByFvq), _priceM: priceM };
+    const eliminatedReason = failedMust ? 'must' : (failedByFvq ? 'fvq' : null);
+    return { ...p, _fvq: fvq, _eliminatedReason: eliminatedReason, _priceM: priceM };
   });
   const sorted = withFvq.sort((a,b) => {
     const af = Number.isFinite(a._fvq) ? a._fvq : -Infinity;
@@ -603,13 +629,22 @@ function renderCompare() {
   const grid=document.createElement('div'); grid.className='compare-grid';
   sorted.forEach((p,i)=>{
     const card=document.createElement('div'); card.className='compare-card';
-    const failed=p._failed;
-    if (!failed&&i===0&&sorted.length>1) card.classList.add('top-pick');
-    if (failed) card.classList.add('eliminated');
-    const barColor=failed?'var(--red-border)':'var(--purple-border)';
-    const scoreColor=failed?'var(--red-text)':'var(--text)';
-    const topTag=!failed&&i===0&&sorted.length>1?`<span class="tag tag-top">Top pick</span> `:'';
-    const elimTag=failed?`<span class="tag tag-elim">Eliminated</span> `:'';
+    const eliminated = p._eliminatedReason != null;
+    if (!eliminated && i===0 && sorted.length>1) card.classList.add('top-pick');
+    if (eliminated) card.classList.add('eliminated');
+    const barColor = eliminated ? 'var(--red-border)' : 'var(--purple-border)';
+    const scoreColor = eliminated ? 'var(--red-text)' : 'var(--text)';
+    const topTag = !eliminated && i===0 && sorted.length>1 ? `<span class="tag tag-top">Top pick</span> ` : '';
+    let elimTag = '';
+    if (eliminated) {
+      // tooltip text indicates whether elimination is due to must-have or low FVQ
+      if (p._eliminatedReason === 'must') {
+        const list = p.failedMust && p.failedMust.length ? p.failedMust.join(', ') : 'failed must-have';
+        elimTag = `<span class="tag tag-elim" data-tooltip="Eliminated: failed must-have(s): ${list}">Eliminated</span> `;
+      } else if (p._eliminatedReason === 'fvq') {
+        elimTag = `<span class="tag tag-elim" data-tooltip="Eliminated: FVQ below threshold (<60)">Eliminated</span> `;
+      }
+    }
     const safeName=p.name.replace(/'/g,"\\'");
     // display price (millions) and FVQ (integer, no decimals)
     const priceM = Number.isFinite(p._priceM) ? p._priceM : null;
@@ -631,14 +666,14 @@ function renderCompare() {
       <div class="card-header">
         <div class="card-name"><a class="name-link" onclick="loadProperty('${safeName}')" title="Edit">${elimTag}${topTag}${p.name}${priceLabel}<span class="arrow">⟶</span></a></div>
         <div class="card-actions">
-          <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${failed ? '—' : fvqDisplay}</span></div>
+          <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${p._eliminatedReason === 'must' ? '—' : fvqDisplay}</span></div>
           <button class="small-btn del" onclick="event.stopPropagation(); confirmDelete('${safeName}')">🗑️</button>
         </div>
       </div>
-      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${failed?0:fvqPct}%;"></div></div>
-      <div class="card-meta">${failed ? 'Does not qualify' : (p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—'))}</div>
+      <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${eliminated?0:fvqPct}%;"></div></div>
+      <div class="card-meta">${p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—')}</div>
       ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
-      ${failed?`<div class="card-fails">⚠ Fails: ${p.failedMust.join(', ')}</div>`:''}
+      ${p.failedMust && p.failedMust.length ? `<div class="card-fails">⚠ ${p.failedMust.join(', ')}</div>` : ''}
     `;
     grid.appendChild(card);
     // make the whole card clickable and keyboard accessible
