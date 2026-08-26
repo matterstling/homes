@@ -613,7 +613,7 @@ function renderCompare() {
     const safeName=p.name.replace(/'/g,"\\'");
     // display price (millions) and FVQ (integer, no decimals)
     const priceM = Number.isFinite(p._priceM) ? p._priceM : null;
-    const priceLabel = priceM ? ` ($${priceM.toFixed(1)}M)` : '';
+    const priceLabel = priceM ? ` ($${priceM.toFixed(2)}M)` : '';
     const fvqVal = Number.isFinite(p._fvq) ? p._fvq : null;
     const fvqDisplay = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
     const fvqPct = fvqVal !== null ? Math.min(100, Math.round(fvqVal)) : 0;
