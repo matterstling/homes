@@ -128,7 +128,7 @@
       "mustScores": {
         "sfh": "pass",
         "neighborhood": "pass",
-        "bedrooms": "pass",
+        "bedrooms": "fail",
         "bathrooms": "pass",
         "garage_min": "pass",
         "sqft": "pass",
@@ -161,7 +161,9 @@
       "maxTotal": 84,
       "pct": 54,
       "notes": "On the cozier side, but priced attractively",
-      "failedMust": [],
+      "failedMust": [
+        "4+ bedrooms, 3 on the same floor"
+      ],
       "price": 1575000
     }
   ]
