@@ -165,6 +165,47 @@
         "4+ bedrooms, 3 on the same floor"
       ],
       "price": 1575000
+    },
+    {
+      "name": "Modern Magnolia on 33rd",
+      "mustScores": {
+        "sfh": "pass",
+        "neighborhood": "pass",
+        "bedrooms": "pass",
+        "bathrooms": "pass",
+        "garage_min": "pass",
+        "sqft": "pass",
+        "open_floor": "pass",
+        "outdoor_entertaining": "pass",
+        "move_in": "pass",
+        "school_zone": "pass",
+        "block_value": "pass",
+        "park_access": "pass"
+      },
+      "prefScores": {
+        "bath_3": 3,
+        "sqft_2600": 3,
+        "outdoor_kitchen": 3,
+        "outdoor_privacy": 3,
+        "garage_2car": 2,
+        "flex_room": 3,
+        "two_offices": 3,
+        "yard_catch": 2,
+        "layout": 3,
+        "condition": 3,
+        "no_carpet": 3,
+        "queen_anne": 1,
+        "adu": 2,
+        "gym": 2,
+        "walkable": 2,
+        "curb_appeal": 3
+      },
+      "total": 73,
+      "maxTotal": 84,
+      "pct": 87,
+      "notes": "Love this one.",
+      "failedMust": [],
+      "price": 2250000
     }
   ]
 }
