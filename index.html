@@ -297,6 +297,13 @@
 <script>
 const PASSWORD  = '2026';
 const WORKER_URL = 'https://homes-api.matt-erstling.workers.dev';
+const FVQ_PRICE_SCALE = 25;
+
+function calculateFvq(fitPct, priceM) {
+  return fitPct > 0 && priceM > 0
+    ? (Math.pow(fitPct, 2) / priceM) / FVQ_PRICE_SCALE
+    : null;
+}
 
 // Button labels: [desktop, mobile]
 const MUST_LABELS = {
@@ -533,8 +540,8 @@ function updateSummary() {
   if (priceVal && priceVal > 0) {
     const priceM = priceVal / 1000000;
     priceMEl.textContent = priceM.toFixed(2);
-    // FVQ = (pct^2) / (price_in_millions^2) / 12.5 — show as integer
-    const fvqVal = priceM > 0 && pct > 0 ? (Math.pow(pct, 2) / (priceM * priceM)) / 12.5 : null;
+    // Fit is squared while price has a linear penalty; show as integer.
+    const fvqVal = calculateFvq(pct, priceM);
     fvqEl.textContent = fvqVal !== null ? String(Math.round(fvqVal)) : '—';
   } else {
     priceMEl.textContent = '—';
@@ -612,8 +619,7 @@ function renderCompare() {
     const priceM = p.price ? (p.price / 1000000) : null;
     let fvq = null;
     if (!failedMust && priceM && priceM > 0 && pct > 0) {
-      // FVQ = (pct^2) / (price_in_millions^2) / 12.5
-      fvq = (Math.pow(pct, 2) / (priceM * priceM)) / 12.5;
+      fvq = calculateFvq(pct, priceM);
     }
     // determine elimination reason (must-have fail or FVQ too low)
     const failedByFvq = fvq !== null && fvq < 60;
@@ -666,7 +672,7 @@ function renderCompare() {
       <div class="card-header">
         <div class="card-name"><a class="name-link" onclick="loadProperty('${safeName}')" title="Edit">${elimTag}${topTag}${p.name}${priceLabel}<span class="arrow">⟶</span></a></div>
         <div class="card-actions">
-          <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = (fit%² / price_in_millions²) / 12.5">FVQ: ${p._eliminatedReason === 'must' ? '—' : fvqDisplay}</span></div>
+          <div class="card-score fvq-${fvqCat}" style="color:${scoreColor}"><span title="FVQ = fit%² / (price in millions × 25)">FVQ: ${p._eliminatedReason === 'must' ? '—' : fvqDisplay}</span></div>
           <button class="small-btn del" onclick="event.stopPropagation(); confirmDelete('${safeName}')">🗑️</button>
         </div>
       </div>
