@@ -236,14 +236,14 @@
         "condition": 3,
         "no_carpet": 3,
         "queen_anne": 1,
-        "adu": 3,
+        "adu": 2,
         "gym": 2,
         "curb_appeal": 3,
-        "walkable": 3
+        "walkable": 2
       },
-      "total": 73,
+      "total": 71,
       "maxTotal": 84,
-      "pct": 87,
+      "pct": 85,
       "notes": "Brand new, stunning construction, but smaller lot",
       "failedMust": [],
       "price": 2400000
