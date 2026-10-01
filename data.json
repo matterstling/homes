@@ -204,6 +204,30 @@
       "notes": "Brand new, stunning construction, but smaller lot",
       "failedMust": [],
       "price": 2400000
+    },
+    {
+      "name": "Dravus 5BR Magnolia House/Condo",
+      "mustScores": {
+        "sfh": "pass",
+        "neighborhood": "pass",
+        "bedrooms": "pass",
+        "bathrooms": "pass",
+        "garage_min": "pass",
+        "sqft": "pass",
+        "open_floor": "pass",
+        "outdoor_entertaining": "pass",
+        "move_in": "pass",
+        "school_zone": "pass",
+        "block_value": "pass",
+        "park_access": "pass"
+      },
+      "prefScores": {},
+      "total": 0,
+      "maxTotal": 84,
+      "pct": 0,
+      "notes": "",
+      "failedMust": [],
+      "price": 1595000
     }
   ]
 }
