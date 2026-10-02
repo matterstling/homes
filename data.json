@@ -234,14 +234,14 @@
         "no_carpet": 3,
         "condition": 3,
         "layout": 2,
-        "adu": 2,
+        "adu": 1,
         "walkable": 2,
         "curb_appeal": 2,
         "gym": 1
       },
-      "total": 59,
+      "total": 58,
       "maxTotal": 84,
-      "pct": 70,
+      "pct": 69,
       "notes": "",
       "failedMust": [],
       "price": 1595000
