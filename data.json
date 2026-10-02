@@ -23,7 +23,7 @@
         "outdoor_privacy": 3,
         "garage_2car": 1,
         "flex_room": 3,
-        "two_offices": 2,
+        "two_offices": 3,
         "yard_catch": 2,
         "layout": 2,
         "condition": 2,
@@ -34,9 +34,9 @@
         "curb_appeal": 2,
         "walkable": 2
       },
-      "total": 64,
+      "total": 66,
       "maxTotal": 84,
-      "pct": 76,
+      "pct": 79,
       "notes": "This place is so interesting! Would have a number of home improvement projects to invest in, but checks a lot of boxes.",
       "failedMust": [],
       "price": 2285000
