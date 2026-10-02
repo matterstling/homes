@@ -32,11 +32,11 @@
         "adu": 3,
         "gym": 3,
         "curb_appeal": 2,
-        "walkable": 2
+        "walkable": 1
       },
-      "total": 66,
+      "total": 65,
       "maxTotal": 84,
-      "pct": 79,
+      "pct": 77,
       "notes": "This place is so interesting! Would have a number of home improvement projects to invest in, but checks a lot of boxes.",
       "failedMust": [],
       "price": 2285000
