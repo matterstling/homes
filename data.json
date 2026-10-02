@@ -196,11 +196,11 @@
         "adu": 2,
         "gym": 2,
         "curb_appeal": 3,
-        "walkable": 2
+        "walkable": 3
       },
-      "total": 67,
+      "total": 68,
       "maxTotal": 84,
-      "pct": 80,
+      "pct": 81,
       "notes": "Brand new, stunning construction, but smaller lot",
       "failedMust": [],
       "price": 2400000
