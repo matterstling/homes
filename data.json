@@ -187,7 +187,7 @@
         "outdoor_privacy": 2,
         "garage_2car": 3,
         "flex_room": 3,
-        "two_offices": 3,
+        "two_offices": 2,
         "yard_catch": 1,
         "layout": 3,
         "condition": 3,
@@ -198,9 +198,9 @@
         "curb_appeal": 3,
         "walkable": 3
       },
-      "total": 70,
+      "total": 68,
       "maxTotal": 84,
-      "pct": 83,
+      "pct": 81,
       "notes": "Brand new, stunning construction, but smaller lot",
       "failedMust": [],
       "price": 2400000
