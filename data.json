@@ -105,7 +105,7 @@
         "outdoor_privacy": 3,
         "garage_2car": 3,
         "flex_room": 2,
-        "two_offices": 2,
+        "two_offices": 3,
         "yard_catch": 3,
         "layout": 3,
         "condition": 2,
@@ -116,9 +116,9 @@
         "curb_appeal": 2,
         "walkable": 1
       },
-      "total": 67,
+      "total": 69,
       "maxTotal": 84,
-      "pct": 80,
+      "pct": 82,
       "notes": "Didn't feel quite like us",
       "failedMust": [],
       "price": 2250000
