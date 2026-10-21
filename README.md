@@ -55,3 +55,13 @@ Add, remove, or reorder entries freely. Saved property data uses the `id` field 
 python3 -m http.server 8000
 # open http://localhost:8000
 ```
+
+## Move checklist tab
+
+The **Move** tab is a shared checklist for the November 2026 move and turning the current house into a rental. It sits behind the same password and syncs through the same Worker and `data.json`.
+
+- Task state is stored under `move.tasks` in `data.json`, keyed by task id: `{ done, owner, doneAt, updatedAt }`
+- Owners are `matt` or `lauren` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign
+- Tasks live in `MOVE_PHASES` in the `<script>` block. Titles and notes can change freely, but changing an `id` drops that task's saved state
+- If two people save at once, the page reloads the latest file, re-applies its pending changes and saves again
+- Saving is blocked if the data failed to load, so a bad load can't overwrite saved homes
