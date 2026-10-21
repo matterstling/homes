@@ -61,9 +61,10 @@ python3 -m http.server 8000
 Two shared checklists for the November 2026 move: **Move** (getting into the leased house) and **Rental** (turning the current house into a long-term rental). Both sit behind the same password and sync through the same Worker and `data.json`.
 
 - Both lists store task state in one place, under `move.tasks` in `data.json`, keyed by task id: `{ done, owner, doneAt, statusNote, noteAt, updatedAt }`. Ids are unique across both lists
-- Tasks live in `CHECKLISTS.move` and `CHECKLISTS.rental` in the `<script>` block, each with its own key dates, phases and "Still open" items. Titles and notes can change freely, and a task can move between lists, but changing an `id` drops that task's saved state
-- Owners are `matt` or `lauren` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign
-- Each tab has its own filters: owner, Money & admin only (tasks marked `admin: true`), and Hide done
+- Tasks live in `CHECKLISTS.move` and `CHECKLISTS.rental` in the `<script>` block, each with its own key dates, intro, categories, phases and "Still open" items. Titles and notes can change freely, and a task can move between lists, but changing an `id` drops that task's saved state
+- Owners are `matt`, `lauren` or `both` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign. Tasks owned by Both also show under the Matt and Lauren filters
+- Each task has one category (`cat`), defined per list in `cats`. Each tab has its own filters: owner, type (category) and Hide done
+- A phase with `ordered: true` shows numbered priorities (used for the move-day "Ready by bedtime" list)
 - Each task has a status note: **+ Add note** / **Edit note** opens an editor, **Save note** (or ⌘/Ctrl + Enter) saves, **Cancel** (or Esc) discards. Saving an empty note removes it. Unsaved drafts survive re-renders, and the page warns before closing with one open
 - If two people save at once, the page reloads the latest file, re-applies its pending changes and saves again
 - Saving is blocked if the data failed to load, so a bad load can't overwrite saved homes
