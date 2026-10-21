@@ -60,7 +60,8 @@ python3 -m http.server 8000
 
 The **Move** tab is a shared checklist for the November 2026 move and turning the current house into a rental. It sits behind the same password and syncs through the same Worker and `data.json`.
 
-- Task state is stored under `move.tasks` in `data.json`, keyed by task id: `{ done, owner, doneAt, updatedAt }`
+- Task state is stored under `move.tasks` in `data.json`, keyed by task id: `{ done, owner, doneAt, statusNote, noteAt, updatedAt }`
+- Each task has a status note: **+ Add note** / **Edit note** opens an editor, **Save note** (or ⌘/Ctrl + Enter) saves, **Cancel** (or Esc) discards. Saving an empty note removes it. Unsaved drafts survive re-renders, and the page warns before closing with one open
 - Owners are `matt` or `lauren` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign
 - Tasks live in `MOVE_PHASES` in the `<script>` block. Titles and notes can change freely, but changing an `id` drops that task's saved state
 - If two people save at once, the page reloads the latest file, re-applies its pending changes and saves again

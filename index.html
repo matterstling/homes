@@ -215,6 +215,17 @@
     .mv-title { font-size: 14px; font-weight: 500; cursor: pointer; }
     .mv-note { font-size: 13px; color: var(--text-mid); margin-top: 2px; }
     .mv-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+    .mv-status { margin-top: 7px; padding: 6px 10px; background: var(--surface2); border-left: 2px solid var(--border-mid); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .mv-status-when { display: block; font-size: 11px; color: var(--text-light); margin-top: 2px; white-space: normal; }
+    .mv-note-btn { display: block; margin-top: 6px; padding: 0; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--purple-text); cursor: pointer; }
+    .mv-note-btn:hover { text-decoration: underline; }
+    .mv-editor { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .mv-editor textarea { width: 100%; min-height: 64px; resize: vertical; padding: 8px 10px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.45; }
+    .mv-editor textarea:focus { outline: none; border-color: var(--text); }
+    .mv-editor-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .mv-editor-row .btn { height: 30px; font-size: 12px; }
+    .mv-editor-hint { font-size: 11px; color: var(--text-light); margin-left: auto; }
+    .mv-note-btn:focus-visible { outline: 2px solid var(--purple-border); outline-offset: 2px; }
     .mv-tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
     .mv-tag.move   { background: var(--purple-bg); color: var(--purple-text); }
     .mv-tag.rental { background: var(--amber-bg);  color: var(--amber-text); }
@@ -879,6 +890,54 @@ const MOVE_PHASES = [
 ];
 
 let mvOwnerFilter = 'all', mvTagFilter = 'all', mvSaveTimer = null, mvSaving = false;
+// Open note editors: task id -> unsaved draft text. Survives re-renders and data reloads.
+const mvEditing = {};
+
+function mvNoteHtml(id, st) {
+  if (id in mvEditing) {
+    return `<div class="mv-editor">
+      <textarea id="mvNote-${id}" data-note-id="${id}" aria-label="Status note" placeholder="Where this stands: who you talked to, quotes, what's next…">${mvEsc(mvEditing[id])}</textarea>
+      <div class="mv-editor-row">
+        <button type="button" class="btn btn-primary" data-note-save="${id}">Save note</button>
+        <button type="button" class="btn" data-note-cancel="${id}">Cancel</button>
+        <span class="mv-editor-hint">⌘/Ctrl + Enter to save · Esc to cancel</span>
+      </div>
+    </div>`;
+  }
+  const text = (st.statusNote || '').trim();
+  if (!text) return `<button type="button" class="mv-note-btn" data-note-edit="${id}">+ Add note</button>`;
+  const when = st.noteAt
+    ? `<span class="mv-status-when">Updated ${new Date(st.noteAt).toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</span>` : '';
+  return `<div class="mv-status">${mvEsc(text)}${when}</div>
+    <button type="button" class="mv-note-btn" data-note-edit="${id}">Edit note</button>`;
+}
+
+function openNoteEditor(id) {
+  mvEditing[id] = (moveState[id] || {}).statusNote || '';
+  renderMove();
+  const ta = document.getElementById('mvNote-' + id);
+  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+}
+
+function closeNoteEditor(id) {
+  delete mvEditing[id];
+  renderMove();
+  const b = document.querySelector(`[data-note-edit="${id}"]`);
+  if (b) b.focus();
+}
+
+async function saveNote(id) {
+  const text = (mvEditing[id] ?? '').trim();
+  const prev = ((moveState[id] || {}).statusNote || '').trim();
+  delete mvEditing[id];
+  if (text === prev) { closeNoteEditor(id); return; }
+  setMoveTask(id, { statusNote: text, noteAt: text ? new Date().toISOString() : null });
+  const b = document.querySelector(`[data-note-edit="${id}"]`);
+  if (b) b.focus();
+  clearTimeout(mvSaveTimer);
+  await flushMove();
+  showToast(moveDirty[id] ? 'Note kept on this page — not saved yet' : (text ? 'Note saved' : 'Note removed'));
+}
 const mvEsc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function setMoveTask(id, patch) {
@@ -918,6 +977,9 @@ async function flushMove(retry = true) {
 function renderMove() {
   const list = document.getElementById('mvList');
   if (!list) return;
+  const act = document.activeElement;
+  const keep = act && act.dataset && act.dataset.noteId
+    ? { id: act.id, s: act.selectionStart, e: act.selectionEnd } : null;
   const hide = document.getElementById('mvHideDone').checked;
   let total = 0, done = 0, html = '';
   MOVE_PHASES.forEach(p => {
@@ -937,7 +999,7 @@ function renderMove() {
       rows += `<div class="mv-item${isDone ? ' done' : ''}">
         <input type="checkbox" id="${cb}" data-id="${it.id}" ${isDone ? 'checked' : ''}>
         <div class="mv-body"><label class="mv-title" for="${cb}">${mvEsc(it.title)}</label><span class="mv-tag ${it.tag}">${MOVE_TAGS[it.tag]}</span>
-          ${it.note ? `<div class="mv-note">${mvEsc(it.note)}</div>` : ''}${meta}</div>
+          ${it.note ? `<div class="mv-note">${mvEsc(it.note)}</div>` : ''}${meta}${mvNoteHtml(it.id, st)}</div>
         <div class="mv-owner" role="group" aria-label="Owner">${ownerBtns}</div>
       </div>`;
     });
@@ -946,6 +1008,10 @@ function renderMove() {
       <div class="mv-why">${mvEsc(p.why)}</div>${rows}`;
   });
   list.innerHTML = html || '<div class="empty-state">Nothing matches these filters.</div>';
+  if (keep) {
+    const ta = document.getElementById(keep.id);
+    if (ta) { ta.focus(); ta.setSelectionRange(keep.s, keep.e); }
+  }
   document.getElementById('mvFill').style.width = (total ? done / total * 100 : 0) + '%';
   document.getElementById('mvCount').textContent = `${done} / ${total} done`;
 }
@@ -954,7 +1020,23 @@ document.getElementById('mvList').addEventListener('change', e => {
   const cb = e.target.closest('input[type=checkbox][data-id]');
   if (cb) setMoveTask(cb.dataset.id, { done: cb.checked });
 });
+document.getElementById('mvList').addEventListener('input', e => {
+  const ta = e.target.closest('textarea[data-note-id]');
+  if (ta) mvEditing[ta.dataset.noteId] = ta.value;
+});
+document.getElementById('mvList').addEventListener('keydown', e => {
+  const ta = e.target.closest('textarea[data-note-id]');
+  if (!ta) return;
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNote(ta.dataset.noteId); }
+  else if (e.key === 'Escape') { e.preventDefault(); closeNoteEditor(ta.dataset.noteId); }
+});
 document.getElementById('mvList').addEventListener('click', e => {
+  const ed = e.target.closest('[data-note-edit]');
+  if (ed) return openNoteEditor(ed.dataset.noteEdit);
+  const sv = e.target.closest('[data-note-save]');
+  if (sv) return saveNote(sv.dataset.noteSave);
+  const cn = e.target.closest('[data-note-cancel]');
+  if (cn) return closeNoteEditor(cn.dataset.noteCancel);
   const b = e.target.closest('.mv-owner button');
   if (!b) return;
   const cur = (moveState[b.dataset.id] || {}).owner || null;
@@ -973,7 +1055,7 @@ document.getElementById('mvTagFilters').addEventListener('click', e => {
   renderMove();
 });
 document.getElementById('mvHideDone').addEventListener('change', renderMove);
-window.addEventListener('beforeunload', e => { if (Object.keys(moveDirty).length) { e.preventDefault(); e.returnValue = ''; } });
+window.addEventListener('beforeunload', e => { if (Object.keys(moveDirty).length || Object.keys(mvEditing).length) { e.preventDefault(); e.returnValue = ''; } });
 </script>
 </body>
 </html>
