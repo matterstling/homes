@@ -246,5 +246,14 @@
       "failedMust": [],
       "price": 1595000
     }
-  ]
+  ],
+  "move": {
+    "tasks": {
+      "rrio-renewal": {
+        "done": false,
+        "owner": "matt",
+        "updatedAt": "2026-10-21T15:55:23.465Z"
+      }
+    }
+  }
 }
