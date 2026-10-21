@@ -253,6 +253,13 @@
         "done": false,
         "owner": null,
         "updatedAt": "2026-10-21T15:55:24.265Z"
+      },
+      "photos": {
+        "done": false,
+        "owner": null,
+        "statusNote": "Can we use the Redfin photos so we can list it sooner?",
+        "noteAt": "2026-10-21T16:10:14.300Z",
+        "updatedAt": "2026-10-21T16:10:14.300Z"
       }
     }
   }
