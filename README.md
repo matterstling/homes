@@ -1,4 +1,4 @@
-# Home Scorecard
+# Home Finding
 
 A single-file web app for evaluating and comparing homes during the Erstling family Seattle home search.
 
