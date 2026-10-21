@@ -65,6 +65,7 @@ Two shared checklists for the November 2026 move: **Move** (getting into the lea
 - Owners are `matt`, `lauren` or `both` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign. Tasks owned by Both also show under the Matt and Lauren filters
 - Each task has one category (`cat`), defined per list in `cats`. Each tab has its own filters: owner, type (category) and Hide done
 - A phase with `ordered: true` shows numbered priorities (used for the move-day "Ready by bedtime" list)
+- **+ Add task** at the end of each phase adds a task to that phase: title, optional details, type and owner. Added tasks are stored in `move.tasks` like everything else, with a `custom: { list, phase, cat, title, note, createdAt }` field, and sync and merge the same way. They can be ticked off and noted, but there's deliberately no way to edit or remove them (or the built-in tasks) from the page. Phases have a stable `key` so added tasks stay put if a phase title changes; if a phase is removed, its added tasks move to the list's last phase
 - Each task has a status note: **+ Add note** / **Edit note** opens an editor, **Save note** (or ⌘/Ctrl + Enter) saves, **Cancel** (or Esc) discards. Saving an empty note removes it. Unsaved drafts survive re-renders, and the page warns before closing with one open
 - If two people save at once, the page reloads the latest file, re-applies its pending changes and saves again
 - Saving is blocked if the data failed to load, so a bad load can't overwrite saved homes
