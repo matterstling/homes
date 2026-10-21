@@ -308,6 +308,7 @@
 
   <div class="tab-bar">
     <button class="tab active" onclick="switchTab('move')">Move</button>
+    <button class="tab" onclick="switchTab('rental')">Rental</button>
     <button class="tab" onclick="switchTab('compare')">Compare</button>
     <button class="tab" onclick="switchTab('score')">Score a home</button>
   </div>
@@ -339,38 +340,8 @@
     </div>
   </div>
 
-  <div id="movePanel">
-    <div class="mv-dates">
-      <span>Lease starts, moving begins <b>Tue Nov 10</b></span>
-      <span>Movers <b>Fri Nov 13</b></span>
-      <span>Rental listed <b>~early Dec</b></span>
-    </div>
-    <div class="mv-prog"><div class="mv-track"><div class="mv-fill" id="mvFill"></div></div><span class="mv-count" id="mvCount">—</span></div>
-    <div class="mv-filters" id="mvOwnerFilters">
-      <span class="lbl">Owner</span>
-      <button class="mv-chip" data-owner="all" aria-pressed="true">Everyone</button>
-      <button class="mv-chip" data-owner="matt" aria-pressed="false">Matt</button>
-      <button class="mv-chip" data-owner="lauren" aria-pressed="false">Lauren</button>
-      <button class="mv-chip" data-owner="none" aria-pressed="false">Unassigned</button>
-    </div>
-    <div class="mv-filters" id="mvTagFilters">
-      <span class="lbl">Area</span>
-      <button class="mv-chip" data-tag="all" aria-pressed="true">All</button>
-      <button class="mv-chip" data-tag="move" aria-pressed="false">Move</button>
-      <button class="mv-chip" data-tag="rental" aria-pressed="false">Rental</button>
-      <button class="mv-chip" data-tag="admin" aria-pressed="false">Money &amp; admin</button>
-      <label class="mv-hide"><input type="checkbox" id="mvHideDone"> Hide done</label>
-    </div>
-    <div id="mvList"></div>
-    <div class="mv-open">
-      <h3>Still open</h3>
-      <ul>
-        <li>Utilities split for the rental: tenant pays all, or we keep water/sewer/garbage and bake it into rent</li>
-        <li>Rent price, once comps are pulled</li>
-        <li>Whether the purchase plan for the leased house gets written down</li>
-      </ul>
-    </div>
-  </div>
+  <div id="movePanel" class="mv-panel" data-list="move"></div>
+  <div id="rentalPanel" class="mv-panel" data-list="rental" style="display:none"></div>
 
   <div id="comparePanel" style="display:none">
     <div class="compare-note">Target FVQ: <strong>100+</strong></div>
@@ -821,77 +792,120 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function switchTab(tab) {
-  const order = ['move','compare','score'];
+  const order = ['move','rental','compare','score'];
   document.getElementById('scorePanel').style.display=tab==='score'?'block':'none';
   document.getElementById('comparePanel').style.display=tab==='compare'?'block':'none';
   document.getElementById('movePanel').style.display=tab==='move'?'block':'none';
+  document.getElementById('rentalPanel').style.display=tab==='rental'?'block':'none';
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',order[i]===tab));
-  if (tab === 'move') renderMove();
+  if (tab === 'move' || tab === 'rental') renderMove();
 }
 
-/* ══════════════ Move checklist ══════════════ */
-// Task ids are the storage keys — rename a title freely, but don't change an id.
+/* ══════════════ Move + Rental checklists ══════════════ */
+// Two workstreams, one store: every task's state lives in data.json under
+// "move.tasks", keyed by task id. Ids are unique across both lists.
+// Rename a title freely, but don't change an id or its saved state is dropped.
 const MOVE_OWNERS = { matt: 'Matt', lauren: 'Lauren' };
-const MOVE_TAGS = { move: 'Move', rental: 'Rental', admin: 'Admin' };
-const MOVE_PHASES = [
-  { title:'This week', when:'Oct 20 – 26', why:'Long-lead calls: movers, lender, insurance and contractors all book out.', items:[
-    { id:'book-movers', tag:'move', title:'Get 2–3 full-service mover quotes and book Fri Nov 13', note:"Tell them it's a short local haul with a loose pack. Ask about hourly minimums, since two blocks will hit the minimum" },
-    { id:'lender-call', tag:'admin', title:'Call the mortgage servicer about converting to a rental', note:'Confirm the owner-occupancy terms are satisfied and ask if they need notice' },
-    { id:'landlord-insurance', tag:'admin', title:'Get a landlord (DP-3) insurance quote', note:"Plan to switch the day we move out. Homeowner policies usually don't cover a tenant-occupied house" },
-    { id:'renters-insurance', tag:'admin', title:'Set up renters insurance for the new house', note:'Effective Nov 10' },
-    { id:'contractor-quotes', tag:'rental', title:'Get quotes for paint, patching, grout and window trim', note:'Book the work for the week after we move out' },
-    { id:'book-clean', tag:'rental', title:'Book a deep clean for move-out week', note:'Includes inside appliances and windows' },
-    { id:'tax-prep', tag:'admin', title:'Talk with our tax preparer about the conversion', note:'Depreciation, deductible prep costs, and how renting affects the home-sale exclusion window' },
-  ]},
-  { title:'Before keys', when:'Oct 27 – Nov 9', why:'Get the new house working before anything heavy moves.', items:[
-    { id:'walkthrough', tag:'move', title:'Walk the new house with the landlord and photo-document condition', note:"Also raise the early-exit clause while we're both there" },
-    { id:'internet', tag:'move', title:'Book internet install at the new house for Nov 10', note:'Ask about letting the installer in a few days early. The office needs to be running before the movers come on the 13th' },
-    { id:'utilities-new', tag:'move', title:'Start City Light and SPU service at the new house, effective Nov 10', note:"Add PSE if there's gas" },
-    { id:'kid-pet-plan', tag:'move', title:'Line up kid and pet coverage for move day', note:"A sitter or a friend's house for the kids; boarding or one closed room for pets" },
-    { id:'floor-plan', tag:'move', title:'Sketch furniture placement for the new rooms', note:'Movers go faster with a labeled floor plan taped by the door' },
-  ]},
-  { title:'Move window', when:'Nov 10 – 13', why:'We start carrying things over on the 10th, so the valuable and fragile items are settled before the movers arrive Friday.', items:[
-    { id:'move-valuables', tag:'move', title:'Nov 10–12: move valuables and the collection ourselves', note:'Wine, art, documents, laptops' },
-    { id:'move-office', tag:'move', title:'Nov 10–12: move the office setup and confirm it works', note:'Keeps work running while the movers handle Friday' },
-    { id:'pack', tag:'move', title:'Loose-pack by room and label boxes with the destination room', note:'' },
-    { id:'kids-rooms', tag:'move', title:"Childproof and set up kids' rooms first at the new house", note:'' },
-    { id:'move-day', tag:'move', title:'Fri Nov 13: kids and pets out, movers in', note:'Unpack beds, kitchen and office first' },
-    { id:'address-change', tag:'admin', title:'File USPS change of address and update banks, DMV and voter registration', note:'Washington asks for license address updates within 10 days' },
-  ]},
-  { title:'Rental prep', when:'Nov 14 – 30', why:'Empty house, refresh, then get compliant before we list.', items:[
-    { id:'paint', tag:'rental', title:'Paint and patch', note:'' },
-    { id:'grout-trim', tag:'rental', title:'Regrout and redo trim and caulk around the windows', note:'' },
-    { id:'deep-clean', tag:'rental', title:'Deep clean after the trades finish', note:'' },
-    { id:'detectors', tag:'rental', title:'Test smoke and carbon monoxide detectors', note:'Washington requires both in rentals' },
-    { id:'rrio-check', tag:'rental', title:"Walk the house against the city's RRIO checklist", note:'Fix anything that would fail an inspection' },
-    { id:'rekey', tag:'rental', title:'Rekey or swap the locks', note:'' },
-    { id:'lead-disclosure', tag:'rental', title:'Prepare a lead paint disclosure if the house was built before 1978', note:'Federal requirement, plus the EPA pamphlet' },
-    { id:'easement', tag:'rental', title:'Pull out the shared easement terms for the flag lot', note:'Turn driveway, parking and access rules into lease house rules, and give the neighbors a heads-up' },
-    { id:'house-guide', tag:'rental', title:'Write a house guide', note:'Shutoffs, breaker panel, trash days, appliance manuals' },
-  ]},
-  { title:'Get compliant and list', when:'Late Nov – Dec', why:"Seattle's rules shape screening and move-in money, so set these up before the listing goes live.", items:[
-    { id:'rrio-register', tag:'admin', title:'Register the property with Seattle RRIO', note:'$126 for two years as of 2026' },
-    { id:'business-license', tag:'admin', title:'Get a Seattle business license tax certificate', note:'' },
-    { id:'bank-accounts', tag:'admin', title:'Open a separate account for rent and a trust account for the deposit', note:'' },
-    { id:'set-rent', tag:'rental', title:'Set rent from comparable listings nearby', note:'Budget 35–45 days to lease, longer over the holidays' },
-    { id:'screening-criteria', tag:'rental', title:'Write and publish screening criteria with the listing', note:'First-in-time rule: offer to the first applicant who meets them. No criminal history screening under Fair Chance' },
-    { id:'photos', tag:'rental', title:'Take listing photos once the house is clean and empty', note:'' },
-    { id:'rent-tool', tag:'rental', title:'Pick a rent-collection and screening tool', note:'' },
-    { id:'lease', tag:'rental', title:"Draft a Washington-compliant lease with Seattle's required notices", note:"Include the city's tenant information packet" },
-    { id:'deposit-cap', tag:'rental', title:"Cap deposit plus move-in fees at one month's rent", note:'Tenants can pay these in installments' },
-    { id:'move-in-checklist', tag:'rental', title:'Complete a signed move-in condition checklist with photos', note:'Required to keep any of the deposit later' },
-  ]},
-  { title:'Once a tenant is in', when:'Ongoing', why:"Calendar these so they don't sneak up.", items:[
-    { id:'insurance-switch', tag:'admin', title:'Switch the insurance to the landlord policy if not done already', note:'' },
-    { id:'rrio-renewal', tag:'admin', title:'Calendar RRIO renewal two years out', note:'' },
-    { id:'rent-increase-rules', tag:'admin', title:'Note rent-increase rules', note:'No increase in the first 12 months. State law caps increases and Seattle requires long written notice' },
-    { id:'track-expenses', tag:'admin', title:'Track every rental expense for taxes', note:'' },
-  ]},
-];
+const CHECKLISTS = {
+  move: {
+    label: 'move',
+    dates: [['Lease starts, moving begins', 'Tue Nov 10'], ['Movers', 'Fri Nov 13']],
+    open: ['Whether the purchase plan for the leased house gets written down'],
+    phases: [
+      { title:'This week', when:'Oct 20 – 26', why:'Movers and insurance book out, so lock these in first.', items:[
+        { id:'book-movers', title:'Get 2–3 full-service mover quotes and book Fri Nov 13', note:"Tell them it's a short local haul with a loose pack. Ask about hourly minimums, since two blocks will hit the minimum" },
+        { id:'renters-insurance', admin:true, title:'Set up renters insurance for the new house', note:'Effective Nov 10' },
+      ]},
+      { title:'Before keys', when:'Oct 27 – Nov 9', why:'Get the new house working before anything heavy moves.', items:[
+        { id:'walkthrough', title:'Walk the new house with the landlord and photo-document condition', note:"Also raise the early-exit clause while we're both there" },
+        { id:'internet', title:'Book internet install at the new house for Nov 10', note:'Ask about letting the installer in a few days early. The office needs to be running before the movers come on the 13th' },
+        { id:'utilities-new', title:'Start City Light and SPU service at the new house, effective Nov 10', note:"Add PSE if there's gas" },
+        { id:'kid-pet-plan', title:'Line up kid and pet coverage for move day', note:"A sitter or a friend's house for the kids; boarding or one closed room for pets" },
+        { id:'floor-plan', title:'Sketch furniture placement for the new rooms', note:'Movers go faster with a labeled floor plan taped by the door' },
+      ]},
+      { title:'Move window', when:'Nov 10 – 13', why:'We start carrying things over on the 10th, so the valuable and fragile items are settled before the movers arrive Friday.', items:[
+        { id:'move-valuables', title:'Nov 10–12: move valuables and the collection ourselves', note:'Wine, art, documents, laptops' },
+        { id:'move-office', title:'Nov 10–12: move the office setup and confirm it works', note:'Keeps work running while the movers handle Friday' },
+        { id:'pack', title:'Loose-pack by room and label boxes with the destination room', note:'' },
+        { id:'kids-rooms', title:"Childproof and set up kids' rooms first at the new house", note:'' },
+        { id:'move-day', title:'Fri Nov 13: kids and pets out, movers in', note:'Unpack beds, kitchen and office first' },
+        { id:'address-change', admin:true, title:'File USPS change of address and update banks, DMV and voter registration', note:'Washington asks for license address updates within 10 days' },
+      ]},
+    ],
+  },
+  rental: {
+    label: 'rental',
+    dates: [['Move-out', 'Fri Nov 13'], ['Prep', 'Nov 14 – 30'], ['Listed', '~early Dec']],
+    open: [
+      'Utilities split: tenant pays all, or we keep water/sewer/garbage and bake it into rent',
+      'Rent price, once comps are pulled',
+    ],
+    phases: [
+      { title:'This week', when:'Oct 20 – 26', why:'The lender, insurer and contractors need lead time before the house is empty.', items:[
+        { id:'lender-call', admin:true, title:'Call the mortgage servicer about converting to a rental', note:'Confirm the owner-occupancy terms are satisfied and ask if they need notice' },
+        { id:'landlord-insurance', admin:true, title:'Get a landlord (DP-3) insurance quote', note:"Plan to switch the day we move out. Homeowner policies usually don't cover a tenant-occupied house" },
+        { id:'contractor-quotes', title:'Get quotes for paint, patching, grout and window trim', note:'Book the work for the week after we move out' },
+        { id:'book-clean', title:'Book a deep clean for move-out week', note:'Includes inside appliances and windows' },
+        { id:'tax-prep', admin:true, title:'Talk with our tax preparer about the conversion', note:'Depreciation, deductible prep costs, and how renting affects the home-sale exclusion window' },
+      ]},
+      { title:'Rental prep', when:'Nov 14 – 30', why:'Empty house, refresh, then get compliant before we list.', items:[
+        { id:'paint', title:'Paint and patch', note:'' },
+        { id:'grout-trim', title:'Regrout and redo trim and caulk around the windows', note:'' },
+        { id:'deep-clean', title:'Deep clean after the trades finish', note:'' },
+        { id:'detectors', title:'Test smoke and carbon monoxide detectors', note:'Washington requires both in rentals' },
+        { id:'rrio-check', title:"Walk the house against the city's RRIO checklist", note:'Fix anything that would fail an inspection' },
+        { id:'rekey', title:'Rekey or swap the locks', note:'' },
+        { id:'lead-disclosure', title:'Prepare a lead paint disclosure if the house was built before 1978', note:'Federal requirement, plus the EPA pamphlet' },
+        { id:'easement', title:'Pull out the shared easement terms for the flag lot', note:'Turn driveway, parking and access rules into lease house rules, and give the neighbors a heads-up' },
+        { id:'house-guide', title:'Write a house guide', note:'Shutoffs, breaker panel, trash days, appliance manuals' },
+      ]},
+      { title:'Get compliant and list', when:'Late Nov – Dec', why:"Seattle's rules shape screening and move-in money, so set these up before the listing goes live.", items:[
+        { id:'rrio-register', admin:true, title:'Register the property with Seattle RRIO', note:'$126 for two years as of 2026' },
+        { id:'business-license', admin:true, title:'Get a Seattle business license tax certificate', note:'' },
+        { id:'bank-accounts', admin:true, title:'Open a separate account for rent and a trust account for the deposit', note:'' },
+        { id:'set-rent', title:'Set rent from comparable listings nearby', note:'Budget 35–45 days to lease, longer over the holidays' },
+        { id:'screening-criteria', title:'Write and publish screening criteria with the listing', note:'First-in-time rule: offer to the first applicant who meets them. No criminal history screening under Fair Chance' },
+        { id:'photos', title:'Take listing photos once the house is clean and empty', note:'' },
+        { id:'rent-tool', title:'Pick a rent-collection and screening tool', note:'' },
+        { id:'lease', title:"Draft a Washington-compliant lease with Seattle's required notices", note:"Include the city's tenant information packet" },
+        { id:'deposit-cap', title:"Cap deposit plus move-in fees at one month's rent", note:'Tenants can pay these in installments' },
+        { id:'move-in-checklist', title:'Complete a signed move-in condition checklist with photos', note:'Required to keep any of the deposit later' },
+      ]},
+      { title:'Once a tenant is in', when:'Ongoing', why:"Calendar these so they don't sneak up.", items:[
+        { id:'insurance-switch', admin:true, title:'Switch the insurance to the landlord policy if not done already', note:'' },
+        { id:'rrio-renewal', admin:true, title:'Calendar RRIO renewal two years out', note:'' },
+        { id:'rent-increase-rules', admin:true, title:'Note rent-increase rules', note:'No increase in the first 12 months. State law caps increases and Seattle requires long written notice' },
+        { id:'track-expenses', admin:true, title:'Track every rental expense for taxes', note:'' },
+      ]},
+    ],
+  },
+};
 
-let mvOwnerFilter = 'all', mvTagFilter = 'all', mvSaveTimer = null, mvSaving = false;
+let mvSaveTimer = null, mvSaving = false;
+// Per-list view state: owner filter, admin-only filter, hide done
+const mvView = { move: { owner:'all', admin:false, hide:false }, rental: { owner:'all', admin:false, hide:false } };
 // Open note editors: task id -> unsaved draft text. Survives re-renders and data reloads.
 const mvEditing = {};
+const mvEsc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+// Build each panel's static shell once: key dates, progress, filters, list, open questions
+function buildChecklistPanels() {
+  Object.entries(CHECKLISTS).forEach(([key, cl]) => {
+    const panel = document.querySelector(`.mv-panel[data-list="${key}"]`);
+    const ownerChips = [['all','Everyone'], ...Object.entries(MOVE_OWNERS), ['none','Unassigned']]
+      .map(([k, n], i) => `<button class="mv-chip" data-filter-owner="${k}" aria-pressed="${i === 0}">${n}</button>`).join('');
+    panel.innerHTML = `
+      <div class="mv-dates">${cl.dates.map(([l, d]) => `<span>${l} <b>${d}</b></span>`).join('')}</div>
+      <div class="mv-prog"><div class="mv-track"><div class="mv-fill" data-role="fill"></div></div><span class="mv-count" data-role="count">—</span></div>
+      <div class="mv-filters">
+        <span class="lbl">Owner</span>${ownerChips}
+        <button class="mv-chip" data-filter-admin aria-pressed="false">Money &amp; admin only</button>
+        <label class="mv-hide"><input type="checkbox" id="mvHide-${key}" data-filter-hide> Hide done</label>
+      </div>
+      <div data-role="list"></div>
+      ${cl.open.length ? `<div class="mv-open"><h3>Still open</h3><ul>${cl.open.map(o => `<li>${mvEsc(o)}</li>`).join('')}</ul></div>` : ''}`;
+  });
+}
 
 function mvNoteHtml(id, st) {
   if (id in mvEditing) {
@@ -938,7 +952,6 @@ async function saveNote(id) {
   await flushMove();
   showToast(moveDirty[id] ? 'Note kept on this page — not saved yet' : (text ? 'Note saved' : 'Note removed'));
 }
-const mvEsc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function setMoveTask(id, patch) {
   const cur = moveState[id] || { done:false, owner:null };
@@ -974,87 +987,91 @@ async function flushMove(retry = true) {
   if (Object.keys(moveDirty).length && retry) { clearTimeout(mvSaveTimer); mvSaveTimer = setTimeout(flushMove, 600); }
 }
 
+// Renders both checklists (only the visible one matters, but both stay current)
 function renderMove() {
-  const list = document.getElementById('mvList');
-  if (!list) return;
+  if (!document.querySelector('.mv-panel [data-role="list"]')) return;
   const act = document.activeElement;
   const keep = act && act.dataset && act.dataset.noteId
     ? { id: act.id, s: act.selectionStart, e: act.selectionEnd } : null;
-  const hide = document.getElementById('mvHideDone').checked;
-  let total = 0, done = 0, html = '';
-  MOVE_PHASES.forEach(p => {
-    let pt = 0, pd = 0, rows = '';
-    p.items.forEach(it => {
-      const st = moveState[it.id] || {};
-      const isDone = !!st.done, owner = st.owner || null;
-      total++; pt++; if (isDone) { done++; pd++; }
-      if (mvTagFilter !== 'all' && it.tag !== mvTagFilter) return;
-      if (mvOwnerFilter === 'none' ? owner : (mvOwnerFilter !== 'all' && owner !== mvOwnerFilter)) return;
-      if (hide && isDone) return;
-      const cb = 'mv-' + it.id;
-      const ownerBtns = Object.entries(MOVE_OWNERS).map(([k, name]) =>
-        `<button type="button" data-id="${it.id}" data-owner="${k}" aria-pressed="${owner === k}" title="Assign to ${name}">${name}</button>`).join('');
-      const meta = isDone && st.doneAt
-        ? `<div class="mv-meta">Done ${new Date(st.doneAt).toLocaleDateString(undefined, { month:'short', day:'numeric' })}</div>` : '';
-      rows += `<div class="mv-item${isDone ? ' done' : ''}">
-        <input type="checkbox" id="${cb}" data-id="${it.id}" ${isDone ? 'checked' : ''}>
-        <div class="mv-body"><label class="mv-title" for="${cb}">${mvEsc(it.title)}</label><span class="mv-tag ${it.tag}">${MOVE_TAGS[it.tag]}</span>
-          ${it.note ? `<div class="mv-note">${mvEsc(it.note)}</div>` : ''}${meta}${mvNoteHtml(it.id, st)}</div>
-        <div class="mv-owner" role="group" aria-label="Owner">${ownerBtns}</div>
-      </div>`;
+  Object.entries(CHECKLISTS).forEach(([key, cl]) => {
+    const panel = document.querySelector(`.mv-panel[data-list="${key}"]`);
+    const v = mvView[key];
+    let total = 0, done = 0, html = '';
+    cl.phases.forEach(p => {
+      let pt = 0, pd = 0, rows = '';
+      p.items.forEach(it => {
+        const st = moveState[it.id] || {};
+        const isDone = !!st.done, owner = st.owner || null;
+        total++; pt++; if (isDone) { done++; pd++; }
+        if (v.admin && !it.admin) return;
+        if (v.owner === 'none' ? owner : (v.owner !== 'all' && owner !== v.owner)) return;
+        if (v.hide && isDone) return;
+        const cb = 'mv-' + it.id;
+        const ownerBtns = Object.entries(MOVE_OWNERS).map(([k, name]) =>
+          `<button type="button" data-id="${it.id}" data-owner="${k}" aria-pressed="${owner === k}" title="Assign to ${name}">${name}</button>`).join('');
+        const meta = isDone && st.doneAt
+          ? `<div class="mv-meta">Done ${new Date(st.doneAt).toLocaleDateString(undefined, { month:'short', day:'numeric' })}</div>` : '';
+        rows += `<div class="mv-item${isDone ? ' done' : ''}">
+          <input type="checkbox" id="${cb}" data-id="${it.id}" ${isDone ? 'checked' : ''}>
+          <div class="mv-body"><label class="mv-title" for="${cb}">${mvEsc(it.title)}</label>${it.admin ? '<span class="mv-tag admin">Admin</span>' : ''}
+            ${it.note ? `<div class="mv-note">${mvEsc(it.note)}</div>` : ''}${meta}${mvNoteHtml(it.id, st)}</div>
+          <div class="mv-owner" role="group" aria-label="Owner">${ownerBtns}</div>
+        </div>`;
+      });
+      if (!rows) return;
+      html += `<div class="section-hdr mv-phase-hdr"><span>${p.title}</span><span class="when">${p.when}</span><span class="pc">${pd}/${pt}</span></div>
+        <div class="mv-why">${mvEsc(p.why)}</div>${rows}`;
     });
-    if (!rows) return;
-    html += `<div class="section-hdr mv-phase-hdr"><span>${p.title}</span><span class="when">${p.when}</span><span class="pc">${pd}/${pt}</span></div>
-      <div class="mv-why">${mvEsc(p.why)}</div>${rows}`;
+    panel.querySelector('[data-role="list"]').innerHTML = html || '<div class="empty-state">Nothing matches these filters.</div>';
+    panel.querySelector('[data-role="fill"]').style.width = (total ? done / total * 100 : 0) + '%';
+    panel.querySelector('[data-role="count"]').textContent = `${done} / ${total} ${cl.label} tasks done`;
   });
-  list.innerHTML = html || '<div class="empty-state">Nothing matches these filters.</div>';
   if (keep) {
     const ta = document.getElementById(keep.id);
     if (ta) { ta.focus(); ta.setSelectionRange(keep.s, keep.e); }
   }
-  document.getElementById('mvFill').style.width = (total ? done / total * 100 : 0) + '%';
-  document.getElementById('mvCount').textContent = `${done} / ${total} done`;
 }
 
-document.getElementById('mvList').addEventListener('change', e => {
-  const cb = e.target.closest('input[type=checkbox][data-id]');
-  if (cb) setMoveTask(cb.dataset.id, { done: cb.checked });
+buildChecklistPanels();
+renderMove();
+document.querySelectorAll('.mv-panel').forEach(panel => {
+  const key = panel.dataset.list, v = mvView[key];
+  panel.addEventListener('change', e => {
+    if (e.target.matches('[data-filter-hide]')) { v.hide = e.target.checked; return renderMove(); }
+    const cb = e.target.closest('input[type=checkbox][data-id]');
+    if (cb) setMoveTask(cb.dataset.id, { done: cb.checked });
+  });
+  panel.addEventListener('input', e => {
+    const ta = e.target.closest('textarea[data-note-id]');
+    if (ta) mvEditing[ta.dataset.noteId] = ta.value;
+  });
+  panel.addEventListener('keydown', e => {
+    const ta = e.target.closest('textarea[data-note-id]');
+    if (!ta) return;
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNote(ta.dataset.noteId); }
+    else if (e.key === 'Escape') { e.preventDefault(); closeNoteEditor(ta.dataset.noteId); }
+  });
+  panel.addEventListener('click', e => {
+    const fo = e.target.closest('[data-filter-owner]');
+    if (fo) {
+      v.owner = fo.dataset.filterOwner;
+      panel.querySelectorAll('[data-filter-owner]').forEach(x => x.setAttribute('aria-pressed', x === fo));
+      return renderMove();
+    }
+    const fa = e.target.closest('[data-filter-admin]');
+    if (fa) { v.admin = !v.admin; fa.setAttribute('aria-pressed', v.admin); return renderMove(); }
+    const ed = e.target.closest('[data-note-edit]');
+    if (ed) return openNoteEditor(ed.dataset.noteEdit);
+    const sv = e.target.closest('[data-note-save]');
+    if (sv) return saveNote(sv.dataset.noteSave);
+    const cn = e.target.closest('[data-note-cancel]');
+    if (cn) return closeNoteEditor(cn.dataset.noteCancel);
+    const b = e.target.closest('.mv-owner button');
+    if (!b) return;
+    const cur = (moveState[b.dataset.id] || {}).owner || null;
+    setMoveTask(b.dataset.id, { owner: cur === b.dataset.owner ? null : b.dataset.owner });
+  });
 });
-document.getElementById('mvList').addEventListener('input', e => {
-  const ta = e.target.closest('textarea[data-note-id]');
-  if (ta) mvEditing[ta.dataset.noteId] = ta.value;
-});
-document.getElementById('mvList').addEventListener('keydown', e => {
-  const ta = e.target.closest('textarea[data-note-id]');
-  if (!ta) return;
-  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNote(ta.dataset.noteId); }
-  else if (e.key === 'Escape') { e.preventDefault(); closeNoteEditor(ta.dataset.noteId); }
-});
-document.getElementById('mvList').addEventListener('click', e => {
-  const ed = e.target.closest('[data-note-edit]');
-  if (ed) return openNoteEditor(ed.dataset.noteEdit);
-  const sv = e.target.closest('[data-note-save]');
-  if (sv) return saveNote(sv.dataset.noteSave);
-  const cn = e.target.closest('[data-note-cancel]');
-  if (cn) return closeNoteEditor(cn.dataset.noteCancel);
-  const b = e.target.closest('.mv-owner button');
-  if (!b) return;
-  const cur = (moveState[b.dataset.id] || {}).owner || null;
-  setMoveTask(b.dataset.id, { owner: cur === b.dataset.owner ? null : b.dataset.owner });
-});
-document.getElementById('mvOwnerFilters').addEventListener('click', e => {
-  const b = e.target.closest('.mv-chip'); if (!b) return;
-  mvOwnerFilter = b.dataset.owner;
-  document.querySelectorAll('#mvOwnerFilters .mv-chip').forEach(x => x.setAttribute('aria-pressed', x === b));
-  renderMove();
-});
-document.getElementById('mvTagFilters').addEventListener('click', e => {
-  const b = e.target.closest('.mv-chip'); if (!b) return;
-  mvTagFilter = b.dataset.tag;
-  document.querySelectorAll('#mvTagFilters .mv-chip').forEach(x => x.setAttribute('aria-pressed', x === b));
-  renderMove();
-});
-document.getElementById('mvHideDone').addEventListener('change', renderMove);
 window.addEventListener('beforeunload', e => { if (Object.keys(moveDirty).length || Object.keys(mvEditing).length) { e.preventDefault(); e.returnValue = ''; } });
 </script>
 </body>
