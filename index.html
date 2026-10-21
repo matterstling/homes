@@ -307,12 +307,12 @@
   </header>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('score')">Score a home</button>
+    <button class="tab active" onclick="switchTab('move')">Move</button>
     <button class="tab" onclick="switchTab('compare')">Compare</button>
-    <button class="tab" onclick="switchTab('move')">Move</button>
+    <button class="tab" onclick="switchTab('score')">Score a home</button>
   </div>
 
-  <div id="scorePanel">
+  <div id="scorePanel" style="display:none">
     <div class="prop-row">
       <input type="text" id="propName" placeholder="Address or nickname" />
       <div class="price-wrap">
@@ -339,7 +339,7 @@
     </div>
   </div>
 
-  <div id="movePanel" style="display:none">
+  <div id="movePanel">
     <div class="mv-dates">
       <span>Lease starts, moving begins <b>Tue Nov 10</b></span>
       <span>Movers <b>Fri Nov 13</b></span>
@@ -821,7 +821,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function switchTab(tab) {
-  const order = ['score','compare','move'];
+  const order = ['move','compare','score'];
   document.getElementById('scorePanel').style.display=tab==='score'?'block':'none';
   document.getElementById('comparePanel').style.display=tab==='compare'?'block':'none';
   document.getElementById('movePanel').style.display=tab==='move'?'block':'none';
