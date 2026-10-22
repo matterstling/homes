@@ -264,7 +264,9 @@
       "book-movers": {
         "done": false,
         "owner": "matt",
-        "updatedAt": "2026-10-22T04:42:02.957Z"
+        "updatedAt": "2026-10-22T04:48:01.152Z",
+        "statusNote": "Eco: $6600 (full move, need smaller inventory)\nPure: TBD (needs Zoom)\nJohn Frank: TBD (need to call)\nPuget Sound Moving (Folz Rec): TBD (need to reach out)",
+        "noteAt": "2026-10-22T04:48:01.152Z"
       },
       "m-valuation": {
         "done": false,
