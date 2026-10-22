@@ -411,6 +411,13 @@
         "done": false,
         "owner": "matt",
         "updatedAt": "2026-10-22T05:14:05.847Z"
+      },
+      "set-rent": {
+        "done": false,
+        "owner": null,
+        "statusNote": "$5,500/mo\nNeed to explore Airbnb during holidays",
+        "noteAt": "2026-10-22T05:15:09.531Z",
+        "updatedAt": "2026-10-22T05:15:09.531Z"
       }
     }
   }
