@@ -296,7 +296,9 @@
       "m-self-list": {
         "done": false,
         "owner": "both",
-        "updatedAt": "2026-10-22T04:42:28.489Z"
+        "updatedAt": "2026-10-22T04:48:13.952Z",
+        "statusNote": "Need to do this before completing move quotes",
+        "noteAt": "2026-10-22T04:48:13.952Z"
       },
       "internet": {
         "done": false,
