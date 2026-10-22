@@ -182,7 +182,25 @@
     }
     .card-meta  { font-size: 12px; color: var(--text-light); }
     .card-fails { font-size: 12px; color: var(--red-text); margin-top: 4px; }
-    .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; font-style: italic; }
+    .card-notes { font-size: 12px; color: var(--text-mid); margin-top: 6px; overflow-wrap: anywhere; }
+    .notes-hint { color: var(--text-light); }
+    /* Rendered markdown in notes */
+    .md > :first-child { margin-top: 0; }
+    .md > :last-child { margin-bottom: 0; }
+    .md p { margin: 0 0 6px; }
+    .md ul, .md ol { margin: 2px 0 6px; padding-left: 1.3em; }
+    .md li { margin: 1px 0; }
+    .md li.md-task { list-style: none; margin-left: -1.3em; }
+    .md .md-box { display: inline-block; width: 1.3em; color: var(--text-mid); }
+    .md li.md-done { color: var(--text-light); }
+    .md .md-h { font-weight: 600; margin: 6px 0 2px; color: var(--text); }
+    .md strong { font-weight: 600; color: var(--text); }
+    .md a { color: var(--purple-text); text-decoration: underline; text-underline-offset: 2px; }
+    .md code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.92em; background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0 4px; }
+    .md pre { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 8px 10px; overflow-x: auto; margin: 4px 0 6px; }
+    .md pre code { border: none; padding: 0; background: none; }
+    .md blockquote { margin: 4px 0 6px; padding-left: 10px; border-left: 2px solid var(--border-mid); color: var(--text-mid); }
+    .md hr { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
     .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; white-space: nowrap; font-weight: 500; }
     .tag-top  { background: var(--purple-bg); color: var(--purple-text); }
     .tag-elim { background: var(--red-bg);    color: var(--red-text); }
@@ -215,7 +233,7 @@
     .mv-title { font-size: 14px; font-weight: 500; cursor: pointer; }
     .mv-note { font-size: 13px; color: var(--text-mid); margin-top: 2px; }
     .mv-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
-    .mv-status { margin-top: 7px; padding: 6px 10px; background: var(--surface2); border-left: 2px solid var(--border-mid); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+    .mv-status { margin-top: 7px; padding: 6px 10px; background: var(--surface2); border-left: 2px solid var(--border-mid); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
     .mv-status-when { display: block; font-size: 11px; color: var(--text-light); margin-top: 2px; white-space: normal; }
     .mv-note-btn { display: block; margin-top: 6px; padding: 0; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--purple-text); cursor: pointer; }
     .mv-note-btn:hover { text-decoration: underline; }
@@ -346,7 +364,7 @@
       <div class="summary-cell"><div class="summary-val" id="ratedCount">0/16</div><div class="summary-lbl">Prefs rated</div></div>
     </div>
     <div class="notes-wrap">
-      <div class="notes-label">Notes</div>
+      <div class="notes-label">Notes <span class="notes-hint">· markdown works</span></div>
       <textarea id="notesArea" placeholder="Gut feel, things to follow up on, what stood out..."></textarea>
     </div>
   </div>
@@ -384,6 +402,73 @@ const SCORE_LABELS = [
   ['👍 Meets', '👍'],
   ['❇️ Exceeds', '❇️'],
 ];
+
+/* ══════════════ Markdown for notes ══════════════
+   A small, safe renderer: the text is HTML-escaped first, then markdown is
+   applied, so nothing a note contains can inject markup or script.
+   Supports: # headings, **bold**, *italic*, ~~strike~~, `code`, ``` blocks,
+   [links](https://…) and bare URLs, - / 1. lists, - [ ] checklists, > quotes, --- rules. */
+function mdEscape(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function mdInline(text) {
+  const stash = [];
+  const keep = html => `\u0000${stash.push(html) - 1}\u0000`;
+  let s = text;
+  s = s.replace(/`([^`]+)`/g, (_, c) => keep(`<code>${c}</code>`));
+  s = s.replace(/\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^\s)]+)\)/g,
+    (_, label, url) => keep(`<a href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`));
+  s = s.replace(/\bhttps?:\/\/(?:(?!&quot;|&#39;|&lt;|&gt;)[^\s<])*(?:(?!&quot;|&#39;|&lt;|&gt;)[^\s<.,;:!?)])/g,
+    url => keep(`<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`));
+  s = s.replace(/(\*\*|__)(?=\S)([\s\S]*?\S)\1/g, '<strong>$2</strong>');
+  s = s.replace(/(^|[^*\w])\*(?=\S)([^*]*?\S)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/(^|[^\w])_(?=\S)([^_]*?\S)_(?!\w)/g, '$1<em>$2</em>');
+  s = s.replace(/~~(?=\S)([\s\S]*?\S)~~/g, '<del>$1</del>');
+  return s.replace(/\u0000(\d+)\u0000/g, (_, i) => stash[+i]);
+}
+function mdToHtml(src) {
+  const lines = mdEscape(String(src || '').replace(/\r\n?/g, '\n')).split('\n');
+  const out = [];
+  let para = [], list = null, quote = [];
+  const flushPara = () => { if (para.length) { out.push(`<p>${para.map(mdInline).join('<br>')}</p>`); para = []; } };
+  const flushList = () => { if (list) { out.push(`<${list.tag}>${list.items.join('')}</${list.tag}>`); list = null; } };
+  const flushQuote = () => { if (quote.length) { out.push(`<blockquote>${quote.map(mdInline).join('<br>')}</blockquote>`); quote = []; } };
+  const flushAll = () => { flushPara(); flushList(); flushQuote(); };
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*```/.test(line)) {
+      flushAll();
+      const code = [];
+      while (++i < lines.length && !/^\s*```/.test(lines[i])) code.push(lines[i]);
+      out.push(`<pre><code>${code.join('\n')}</code></pre>`);
+      continue;
+    }
+    if (!line.trim()) { flushAll(); continue; }
+    let m;
+    if ((m = line.match(/^\s*(#{1,6})\s+(.*)$/))) { flushAll(); out.push(`<div class="md-h">${mdInline(m[2])}</div>`); continue; }
+    if (/^\s*([-*_])(\s*\1){2,}\s*$/.test(line)) { flushAll(); out.push('<hr>'); continue; }
+    if ((m = line.match(/^\s*&gt;\s?(.*)$/))) { flushPara(); flushList(); quote.push(m[1]); continue; }
+    const ul = line.match(/^\s*[-*+]\s+(.*)$/), ol = line.match(/^\s*\d+[.)]\s+(.*)$/);
+    if (ul || ol) {
+      flushPara(); flushQuote();
+      const tag = ul ? 'ul' : 'ol';
+      if (!list || list.tag !== tag) { flushList(); list = { tag, items: [] }; }
+      let body = (ul || ol)[1], cls = '';
+      const task = body.match(/^\[( |x|X)\]\s+(.*)$/);
+      if (task) {
+        const done = task[1] !== ' ';
+        cls = ` class="md-task${done ? ' md-done' : ''}"`;
+        body = `<span class="md-box" aria-hidden="true">${done ? '☑' : '☐'}</span>${mdInline(task[2])}`;
+      } else body = mdInline(body);
+      list.items.push(`<li${cls}>${body}</li>`);
+      continue;
+    }
+    flushList(); flushQuote();
+    para.push(line);
+  }
+  flushAll();
+  return out.join('');
+}
 
 function checkPassword() {
   if (document.getElementById('pwInput').value === PASSWORD) {
@@ -757,7 +842,7 @@ function renderCompare() {
       </div>
       <div class="bar-wrap"><div class="bar-fill fvq-${fvqCat}" style="width:${eliminated?0:fvqPct}%;"></div></div>
       <div class="card-meta">${p.total + ' / ' + p.maxTotal + ' points · Fit: ' + (p.pct ? p.pct + '%' : '—')}</div>
-      ${p.notes?`<div class="card-notes">${p.notes}</div>`:''}
+      ${p.notes?`<div class="card-notes md">${mdToHtml(p.notes)}</div>`:''}
       ${p.failedMust && p.failedMust.length ? `<div class="card-fails">⚠ ${p.failedMust.join(', ')}</div>` : ''}
     `;
     grid.appendChild(card);
@@ -989,7 +1074,7 @@ function mvNoteHtml(id, st) {
       <div class="mv-editor-row">
         <button type="button" class="btn btn-primary" data-note-save="${id}">Save note</button>
         <button type="button" class="btn" data-note-cancel="${id}">Cancel</button>
-        <span class="mv-editor-hint">⌘/Ctrl + Enter to save · Esc to cancel</span>
+        <span class="mv-editor-hint">Markdown works · ⌘/Ctrl + Enter to save · Esc to cancel</span>
       </div>
     </div>`;
   }
@@ -997,7 +1082,7 @@ function mvNoteHtml(id, st) {
   if (!text) return `<button type="button" class="mv-note-btn" data-note-edit="${id}">+ Add note</button>`;
   const when = st.noteAt
     ? `<span class="mv-status-when">Updated ${new Date(st.noteAt).toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</span>` : '';
-  return `<div class="mv-status">${mvEsc(text)}${when}</div>
+  return `<div class="mv-status"><div class="md">${mdToHtml(text)}</div>${when}</div>
     <button type="button" class="mv-note-btn" data-note-edit="${id}">Edit note</button>`;
 }
 
@@ -1097,7 +1182,7 @@ function addFormHtml(listKey, cl, phaseKey) {
     <label class="mv-add-lbl" for="${fid}-title">New task</label>
     <input type="text" id="${fid}-title" data-add-field="title" data-fk="${fk}" value="${mvEsc(d.title)}" placeholder="What needs to happen" maxlength="160" autocomplete="off">
     ${d.error ? `<div class="mv-add-err" role="alert">${mvEsc(d.error)}</div>` : ''}
-    <textarea id="${fid}-note" data-add-field="note" data-fk="${fk}" rows="2" placeholder="Details (optional)">${mvEsc(d.note)}</textarea>
+    <textarea id="${fid}-note" data-add-field="note" data-fk="${fk}" rows="2" placeholder="Details (optional, markdown works)">${mvEsc(d.note)}</textarea>
     <div class="mv-add-row">
       <label for="${fid}-cat">Type</label>
       <select id="${fid}-cat" data-add-field="cat" data-fk="${fk}">${cats}</select>
@@ -1192,7 +1277,7 @@ function renderMove() {
         rows += `<div class="mv-item${isDone ? ' done' : ''}">
           <input type="checkbox" id="${cb}" data-id="${it.id}" ${isDone ? 'checked' : ''}>
           <div class="mv-body"><label class="mv-title" for="${cb}">${p.ordered ? `<span class="mv-rank">${idx + 1}</span>` : ''}${mvEsc(it.title)}</label><span class="mv-tag">${mvEsc(cl.cats[it.cat])}</span>
-            ${it.note ? `<div class="mv-note">${mvEsc(it.note)}</div>` : ''}${meta}${mvNoteHtml(it.id, st)}</div>
+            ${it.note ? (it.custom ? `<div class="mv-note md">${mdToHtml(it.note)}</div>` : `<div class="mv-note">${mvEsc(it.note)}</div>`) : ''}${meta}${mvNoteHtml(it.id, st)}</div>
           <div class="mv-owner" role="group" aria-label="Owner">${ownerBtns}</div>
         </div>`;
       });
