@@ -371,6 +371,13 @@
         "done": false,
         "owner": "lauren",
         "updatedAt": "2026-10-22T04:45:06.670Z"
+      },
+      "m-supplies": {
+        "done": false,
+        "owner": null,
+        "statusNote": "Also IKEA bags",
+        "noteAt": "2026-10-22T05:05:31.583Z",
+        "updatedAt": "2026-10-22T05:05:31.583Z"
       }
     }
   }
