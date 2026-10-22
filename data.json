@@ -276,7 +276,9 @@
       "renters-insurance": {
         "done": false,
         "owner": "lauren",
-        "updatedAt": "2026-10-22T04:42:13.556Z"
+        "updatedAt": "2026-10-22T16:24:27.327Z",
+        "statusNote": "$500k total required\nMost renters policies cap at $300k — suggest adding umbrella to cover extra $200k (usually comes as $1m umbrella)",
+        "noteAt": "2026-10-22T16:24:27.327Z"
       },
       "m-landlord": {
         "done": false,
