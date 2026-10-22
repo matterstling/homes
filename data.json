@@ -378,6 +378,20 @@
         "statusNote": "Primarily specialty items: e.g. dishpacks, wine boxes\nFor everything else: IKEA bags",
         "noteAt": "2026-10-22T05:06:35.549Z",
         "updatedAt": "2026-10-22T05:06:35.550Z"
+      },
+      "c-mvj2yst8urtw": {
+        "done": false,
+        "owner": "matt",
+        "custom": {
+          "list": "move",
+          "phase": "book-and-decide",
+          "cat": "kids",
+          "title": "Bring Martin to walkthrough with Matt",
+          "note": "Give him a chance to see the new house and be a part of the process",
+          "createdAt": "2026-10-22T05:08:22.748Z"
+        },
+        "updatedAt": "2026-10-22T05:08:22.748Z",
+        "doneAt": null
       }
     }
   }
