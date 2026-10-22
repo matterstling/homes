@@ -303,7 +303,9 @@
       "internet": {
         "done": false,
         "owner": "matt",
-        "updatedAt": "2026-10-22T04:42:45.438Z"
+        "updatedAt": "2026-10-22T05:05:05.150Z",
+        "statusNote": "Xfinity at new house\nMatt has existing modem we can use",
+        "noteAt": "2026-10-22T05:05:05.150Z"
       },
       "address-change": {
         "done": false,
