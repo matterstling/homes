@@ -212,9 +212,13 @@
     .compare-note { text-align: center; color: var(--text-mid); font-size: 13px; margin: 10px 0; }
 
     /* ── Move + Rental (embedded Google Sheet) ── */
-    .sheet-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 12px; font-size: 13px; color: var(--text-mid); }
-    .sheet-bar .btn { display: inline-flex; align-items: center; text-decoration: none; height: 34px; }
-    .sheet-frame { display: block; width: 100%; height: calc(100vh - 260px); min-height: 560px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+    .launch-card { max-width: 520px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; display: flex; flex-direction: column; gap: 12px; }
+    .launch-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; line-height: 1.2; }
+    .launch-sub { font-size: 14px; color: var(--text-mid); line-height: 1.5; }
+    .launch-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 48px; border-radius: var(--radius); background: var(--text); color: var(--bg); font-size: 15px; font-weight: 600; text-decoration: none; }
+    .launch-btn:hover { opacity: 0.88; }
+    .launch-btn:focus-visible { outline: 2px solid var(--purple-border); outline-offset: 3px; }
+    .launch-note { font-size: 12px; color: var(--text-light); line-height: 1.5; }
 
     /* ── Toast ── */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; padding: 9px 18px; border-radius: var(--radius); display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
@@ -310,11 +314,12 @@
   </div>
 
   <div id="planPanel">
-    <div class="sheet-bar">
-      <span>Our move and rental tracker lives in Google Sheets. Edits here save straight to the sheet.</span>
-      <a class="btn" href="https://docs.google.com/spreadsheets/d/1lFM_5oHqp7FFzyl7FEtU3JscXvak5hwXMEgYNZG3TPc/edit" target="_blank" rel="noopener">Open in Google Sheets ↗</a>
+    <div class="launch-card">
+      <div class="launch-title">Seattle Move + Rental</div>
+      <div class="launch-sub">Our task tracker for the Nov 13 move and getting the current house ready to rent. Tick tasks off, assign owners and add notes there.</div>
+      <a class="launch-btn" id="sheetLink" href="https://docs.google.com/spreadsheets/d/1lFM_5oHqp7FFzyl7FEtU3JscXvak5hwXMEgYNZG3TPc/edit" target="_blank" rel="noopener">Open the tracker</a>
+      <div class="launch-note">On a phone this opens the Google Sheets app if it's installed, otherwise Google Sheets in the browser. Editing on a phone needs the app.</div>
     </div>
-    <iframe id="sheetFrame" class="sheet-frame" title="Seattle Move + Rental tracker" loading="lazy"></iframe>
   </div>
 
   <div id="comparePanel" style="display:none">
@@ -328,8 +333,6 @@
 
 <script>
 const PASSWORD  = '2026';
-// Move + Rental tracker (Google Sheet). Access follows the sheet's own sharing settings.
-const SHEET_EMBED_URL = 'https://docs.google.com/spreadsheets/d/1lFM_5oHqp7FFzyl7FEtU3JscXvak5hwXMEgYNZG3TPc/edit?rm=minimal';
 const WORKER_URL = 'https://homes-api.matt-erstling.workers.dev';
 const FVQ_PRICE_SCALE = 25;
 
@@ -417,11 +420,18 @@ function mdToHtml(src) {
   return out.join('');
 }
 
+// Move + Rental tracker link: on phones and tablets, open it in the same tab. iOS and Android only
+// hand a docs.google.com link to the Google Sheets app on a plain tap, and fall back to the browser
+// when the app isn't installed. On computers it opens in a new tab.
+if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) {
+  const sl = document.getElementById('sheetLink');
+  if (sl) { sl.removeAttribute('target'); sl.removeAttribute('rel'); }
+}
+
 function checkPassword() {
   if (document.getElementById('pwInput').value === PASSWORD) {
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-    document.getElementById('sheetFrame').src = SHEET_EMBED_URL;
     loadFromGitHub();
   } else {
     document.getElementById('pwError').style.display = 'block';

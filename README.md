@@ -58,7 +58,9 @@ python3 -m http.server 8000
 
 ## Move + Rental tab
 
-The first tab embeds the move and rental tracker, a Google Sheet ("Seattle Move + Rental"), in an iframe. The sheet's URL is `SHEET_EMBED_URL` in the `<script>` block, and the iframe only gets its `src` after the password is entered.
+The first tab is a launcher for the move and rental tracker, a Google Sheet ("Seattle Move + Rental"). Its link is the `#sheetLink` button in the HTML.
 
-- Access follows the sheet's own Google sharing settings, so it stays restricted to the people it's shared with. Viewers need to be signed into Google in the same browser. Browsers that block third-party cookies (Safari, by default) may show a Google sign-in prompt inside the frame, so the tab also has an **Open in Google Sheets** button
-- The tracker used to be built into this page (Oct 21–22, 2026). Its last saved state is still in `data.json` under `move`, which the page now leaves untouched when it saves homes
+- It's a plain `docs.google.com` link. On a phone, iOS and Android open it in the Google Sheets app when it's installed and fall back to the browser otherwise. On phones and tablets the link opens in the same tab (a plain tap is what reliably hands it to the app); on computers it opens a new tab
+- The sheet used to be embedded in an iframe, but browsers that block third-party cookies (Safari on iPhone) can't sign in to Google inside a frame, and Sheets in a phone browser is view-only anyway
+- Access follows the sheet's own Google sharing settings
+- The tracker used to be built into this page (Oct 21–22, 2026). Its last saved state is still in `data.json` under `move`, which the page leaves untouched when it saves homes
