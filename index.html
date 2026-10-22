@@ -211,69 +211,10 @@
     .empty-state { font-size: 13px; color: var(--text-light); margin-top: 1rem; }
     .compare-note { text-align: center; color: var(--text-mid); font-size: 13px; margin: 10px 0; }
 
-    /* ── Move checklist ── */
-    .mv-dates { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 12px; color: var(--text-mid); margin-bottom: 1rem; }
-    .mv-dates b { color: var(--text); font-weight: 600; }
-    .mv-prog { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
-    .mv-track { flex: 1; height: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-    .mv-fill { height: 100%; width: 0; background: var(--green-border); transition: width 0.3s; }
-    .mv-count { font-size: 12px; color: var(--text-mid); font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .mv-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
-    .mv-filters .lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-light); margin-right: 2px; }
-    .mv-chip { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 11px; border: 1px solid var(--border-mid); border-radius: 999px; background: var(--surface); color: var(--text-mid); cursor: pointer; }
-    .mv-chip[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
-    .mv-hide { margin-left: auto; font-size: 12px; color: var(--text-mid); display: flex; align-items: center; gap: 5px; }
-    .mv-phase-hdr { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-    .mv-phase-hdr .when { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--text-light); }
-    .mv-phase-hdr .pc { margin-left: auto; color: var(--green-text); }
-    .mv-why { font-size: 13px; color: var(--text-mid); margin: 6px 0 2px; }
-    .mv-item { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px 12px; align-items: start; padding: 11px 0; border-bottom: 1px solid var(--border); }
-    .mv-item input[type=checkbox] { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--green-border); cursor: pointer; }
-    .mv-body { min-width: 0; }
-    .mv-title { font-size: 14px; font-weight: 500; cursor: pointer; }
-    .mv-note { font-size: 13px; color: var(--text-mid); margin-top: 2px; }
-    .mv-meta { font-size: 11px; color: var(--text-light); margin-top: 3px; }
-    .mv-status { margin-top: 7px; padding: 6px 10px; background: var(--surface2); border-left: 2px solid var(--border-mid); border-radius: 0 var(--radius) var(--radius) 0; font-size: 13px; color: var(--text); overflow-wrap: anywhere; }
-    .mv-status-when { display: block; font-size: 11px; color: var(--text-light); margin-top: 2px; white-space: normal; }
-    .mv-note-btn { display: block; margin-top: 6px; padding: 0; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--purple-text); cursor: pointer; }
-    .mv-note-btn:hover { text-decoration: underline; }
-    .mv-editor { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
-    .mv-editor textarea { width: 100%; min-height: 64px; resize: vertical; padding: 8px 10px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; line-height: 1.45; }
-    .mv-editor textarea:focus { outline: none; border-color: var(--text); }
-    .mv-editor-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .mv-editor-row .btn { height: 30px; font-size: 12px; }
-    .mv-editor-hint { font-size: 11px; color: var(--text-light); margin-left: auto; }
-    .mv-add-btn { display: block; margin: 10px 0 4px; padding: 0; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--purple-text); cursor: pointer; }
-    .mv-add-btn:hover { text-decoration: underline; }
-    .mv-add-btn:focus-visible { outline: 2px solid var(--purple-border); outline-offset: 2px; }
-    .mv-add-form { margin: 12px 0 4px; padding: 12px; border: 1px solid var(--border-mid); border-radius: var(--radius-lg); background: var(--surface); display: flex; flex-direction: column; gap: 8px; }
-    .mv-add-lbl { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); }
-    .mv-add-form input[type=text], .mv-add-form textarea, .mv-add-form select { width: 100%; padding: 8px 10px; border: 1px solid var(--border-mid); border-radius: var(--radius); background: var(--surface); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; }
-    .mv-add-form textarea { font-size: 13px; resize: vertical; min-height: 52px; line-height: 1.45; }
-    .mv-add-form input[type=text]:focus, .mv-add-form textarea:focus, .mv-add-form select:focus { outline: none; border-color: var(--text); }
-    .mv-add-row { display: grid; grid-template-columns: auto 1fr auto 1fr; align-items: center; gap: 8px; font-size: 12px; color: var(--text-mid); }
-    .mv-add-err { font-size: 12px; color: var(--red-text); }
-    @media (max-width: 600px) { .mv-add-row { grid-template-columns: auto 1fr; } }
-    .mv-note-btn:focus-visible { outline: 2px solid var(--purple-border); outline-offset: 2px; }
-    .mv-tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; }
-    .mv-tag { background: var(--surface2); color: var(--text-mid); white-space: nowrap; }
-    .mv-rank { display: inline-block; min-width: 1.5em; font-weight: 600; color: var(--green-text); font-variant-numeric: tabular-nums; }
-    .mv-intro { font-size: 13px; color: var(--text-mid); margin: -4px 0 14px; max-width: 64ch; }
-    .mv-item.done .mv-title { text-decoration: line-through; color: var(--text-light); }
-    .mv-item.done .mv-note { opacity: 0.7; }
-    .mv-owner { display: flex; border: 1px solid var(--border-mid); border-radius: var(--radius); overflow: hidden; }
-    .mv-owner button { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 4px 9px; border: none; background: var(--surface); color: var(--text-light); cursor: pointer; }
-    .mv-owner button + button { border-left: 1px solid var(--border); }
-    .mv-owner button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
-    .mv-chip:focus-visible, .mv-owner button:focus-visible, .mv-item input:focus-visible { outline: 2px solid var(--purple-border); outline-offset: 2px; }
-    .mv-open { margin-top: 2rem; background: var(--surface2); border-radius: var(--radius-lg); padding: 14px 16px; font-size: 13px; }
-    .mv-open h3 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-    .mv-open li { margin: 3px 0 3px 18px; color: var(--text-mid); }
-    @media (max-width: 600px) {
-      .mv-item { grid-template-columns: 22px 1fr; }
-      .mv-owner { grid-column: 2; justify-self: start; }
-      .mv-hide { margin-left: 0; }
-    }
+    /* ── Move + Rental (embedded Google Sheet) ── */
+    .sheet-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-bottom: 12px; font-size: 13px; color: var(--text-mid); }
+    .sheet-bar .btn { display: inline-flex; align-items: center; text-decoration: none; height: 34px; }
+    .sheet-frame { display: block; width: 100%; height: calc(100vh - 260px); min-height: 560px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
 
     /* ── Toast ── */
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); font-size: 13px; padding: 9px 18px; border-radius: var(--radius); display: none; z-index: 999; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
@@ -336,8 +277,7 @@
   </header>
 
   <div class="tab-bar">
-    <button class="tab active" onclick="switchTab('move')">Move</button>
-    <button class="tab" onclick="switchTab('rental')">Rental</button>
+    <button class="tab active" onclick="switchTab('plan')">Move + Rental</button>
     <button class="tab" onclick="switchTab('compare')">Compare</button>
     <button class="tab" onclick="switchTab('score')">Score a home</button>
   </div>
@@ -369,8 +309,13 @@
     </div>
   </div>
 
-  <div id="movePanel" class="mv-panel" data-list="move"></div>
-  <div id="rentalPanel" class="mv-panel" data-list="rental" style="display:none"></div>
+  <div id="planPanel">
+    <div class="sheet-bar">
+      <span>Our move and rental tracker lives in Google Sheets. Edits here save straight to the sheet.</span>
+      <a class="btn" href="https://docs.google.com/spreadsheets/d/1lFM_5oHqp7FFzyl7FEtU3JscXvak5hwXMEgYNZG3TPc/edit" target="_blank" rel="noopener">Open in Google Sheets ↗</a>
+    </div>
+    <iframe id="sheetFrame" class="sheet-frame" title="Seattle Move + Rental tracker" loading="lazy"></iframe>
+  </div>
 
   <div id="comparePanel" style="display:none">
     <div class="compare-note">Target FVQ: <strong>100+</strong></div>
@@ -383,6 +328,8 @@
 
 <script>
 const PASSWORD  = '2026';
+// Move + Rental tracker (Google Sheet). Access follows the sheet's own sharing settings.
+const SHEET_EMBED_URL = 'https://docs.google.com/spreadsheets/d/1lFM_5oHqp7FFzyl7FEtU3JscXvak5hwXMEgYNZG3TPc/edit?rm=minimal';
 const WORKER_URL = 'https://homes-api.matt-erstling.workers.dev';
 const FVQ_PRICE_SCALE = 25;
 
@@ -474,6 +421,7 @@ function checkPassword() {
   if (document.getElementById('pwInput').value === PASSWORD) {
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('app').style.display = 'block';
+    document.getElementById('sheetFrame').src = SHEET_EMBED_URL;
     loadFromGitHub();
   } else {
     document.getElementById('pwError').style.display = 'block';
@@ -522,8 +470,8 @@ const weightLabel = { high: 'High', low: 'Low' };
 const weightClass = { high: 'badge-high', low: 'badge-low' };
 
 let mustScores = {}, prefScores = {}, savedProperties = [], ghFileSha = null;
-// Move checklist state lives in the same data.json under "move.tasks", keyed by task id
-let moveState = {}, moveDirty = {}, ghExtra = {}, ghLoaded = false;
+// Anything in data.json besides properties (e.g. the archived "move" checklist data) is kept as-is on save
+let ghExtra = {}, ghLoaded = false;
 const isMobile = () => window.innerWidth <= 600;
 
 function setSyncStatus(msg, cls) {
@@ -538,7 +486,6 @@ async function loadFromGitHub() {
     const res = await fetch(WORKER_URL);
     if (res.status === 404) {
       ghFileSha = null; savedProperties = []; ghLoaded = true;
-      moveState = Object.assign({}, moveDirty); renderMove();
       setSyncStatus('No saved data yet — scores will be created on first save.', '');
       renderCompare(); render(); return;
     }
@@ -547,11 +494,9 @@ async function loadFromGitHub() {
     ghFileSha = json.sha;
     const decoded = JSON.parse(decodeURIComponent(escape(atob(json.content.replace(/\n/g, '')))));
     savedProperties = decoded.properties || [];
-    const { properties: _p, move: _m, ...rest } = decoded;
+    const { properties: _p, ...rest } = decoded;
     ghExtra = rest;
     ghLoaded = true;
-    moveState = Object.assign({}, (decoded.move && decoded.move.tasks) || {}, moveDirty);
-    renderMove();
     setSyncStatus(`Last synced: ${new Date().toLocaleTimeString()}`, 'ok');
     renderCompare(); render();
   } catch(e) {
@@ -563,7 +508,7 @@ async function loadFromGitHub() {
 
 async function saveToGitHub() {
   if (!ghLoaded) throw new Error("saved data didn't load, so saving could overwrite it. Refresh the page and try again");
-  const payload = { ...ghExtra, properties: savedProperties, move: { tasks: moveState } };
+  const payload = { ...ghExtra, properties: savedProperties };
   const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload, null, 2))));
   const body = { message: 'chore: update home scores [skip ci]', content: encoded };
   if (ghFileSha) body.sha = ghFileSha;
@@ -888,477 +833,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function switchTab(tab) {
-  const order = ['move','rental','compare','score'];
+  const order = ['plan','compare','score'];
+  document.getElementById('planPanel').style.display=tab==='plan'?'block':'none';
   document.getElementById('scorePanel').style.display=tab==='score'?'block':'none';
   document.getElementById('comparePanel').style.display=tab==='compare'?'block':'none';
-  document.getElementById('movePanel').style.display=tab==='move'?'block':'none';
-  document.getElementById('rentalPanel').style.display=tab==='rental'?'block':'none';
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',order[i]===tab));
-  if (tab === 'move' || tab === 'rental') renderMove();
 }
-
-/* ══════════════ Move + Rental checklists ══════════════ */
-// Two workstreams, one store: every task's state lives in data.json under
-// "move.tasks", keyed by task id. Ids are unique across both lists.
-// Rename a title freely, but don't change an id or its saved state is dropped.
-// "both" is a shared task: it shows under Matt's and Lauren's owner filters too
-const MOVE_OWNERS = { matt: 'Matt', lauren: 'Lauren', both: 'Both' };
-const CHECKLISTS = {
-  move: {
-    label: "move",
-    cats: {"movers": "Movers", "packing": "Packing", "sell": "Sell & donate", "kids": "Kids", "dog": "Dog", "house": "New house", "utilities": "Internet & utilities", "paperwork": "Paperwork"},
-    dates: [["Lease starts","Tue Nov 10"],["Self-move","Nov 10 – 12"],["Movers","Fri Nov 13"]],
-    intro: "Sell or donate a few things now. Pack and carry over everything you're handling yourselves by Thursday night, so on Friday the movers pack and move everything that's left while the older one is at daycare and the dog is at a friend's.",
-    open: [
-      "Whether the purchase plan for the leased house gets written into the lease",
-      "The early-exit clause, before the lease is signed",
-    ],
-    phases: [
-      { key: "book-and-decide", title: "Book and decide", when: "This week · Oct 21 – 26", why: "These need lead time: movers fill up before mid-November, and anything you're selling needs a couple of weeks to go.", items: [
-        { id: "book-movers", cat: "movers", title: "Send the bid request to 2–3 movers and book Fri Nov 13", note: "Full-service local move with partial packing. Compare packing hours, whether they pack Thu Nov 12 or Friday morning, and whether it all fits in one load" },
-        { id: "m-valuation", cat: "movers", title: "Choose the movers' coverage", note: "Basic coverage pays about 60¢ per pound. Ask what full-value protection costs for furniture you care about" },
-        { id: "renters-insurance", cat: "paperwork", title: "Set up renters insurance effective Nov 10", note: "Confirm the policy covers dog liability, since some insurers exclude breeds or bite history" },
-        { id: "m-landlord", cat: "house", title: "Confirm logistics with the landlord", note: "Key handoff time on Nov 10, early access for an internet installer, a walkthrough date, and whether furniture anchors and baby gates are OK" },
-        { id: "kid-pet-plan", cat: "dog", title: "Confirm the dog can stay with your friend on Fri Nov 13", note: "Agree on drop-off and pickup times, and send food and the leash with the dog" },
-        { id: "m-sell", cat: "sell", title: "Pick out what you're selling or donating and list the sell items", note: "Just the pieces you already know about. Everything else moves" },
-        { id: "m-self-list", cat: "packing", title: "Decide what you're moving yourselves", note: "Wine, art, documents, electronics, the newborn's things and personal items. Everything else is for the movers to pack and move" },
-      ]},
-      { key: "line-up-services", title: "Line up services", when: "Next week · Oct 27 – Nov 2", why: "Get every service at the new house scheduled for Nov 10.", items: [
-        { id: "internet", cat: "utilities", title: "Book internet install at the new house", note: "Ideally a few days before Nov 10 if the landlord lets the installer in, otherwise the first slot on Nov 10" },
-        { id: "utilities-new", cat: "utilities", title: "Start City Light, SPU and PSE service at the new house effective Nov 10", note: "Keep the old house's utilities in your name through rental prep" },
-        { id: "m-supplies", cat: "packing", title: "Get boxes and tape for the things you're moving yourselves", note: "A small batch. The movers bring their own materials for everything else" },
-        { id: "address-change", cat: "paperwork", title: "Schedule USPS mail forwarding to start Nov 10", note: "You can set the start date ahead of time online" },
-      ]},
-      { key: "pack-and-prep", title: "Pack and prep", when: "Before keys · Nov 3 – 9", why: "Pack what you're moving yourselves, starting with what you won't need before the move, and mark what stays behind for the rental.", items: [
-        { id: "pack", cat: "packing", title: "Start packing the things you're moving yourselves", note: "Begin with what you won't need before Nov 10: art, decor, files, spare electronics. Label each box with its room at the new house" },
-        { id: "m-stays", cat: "packing", title: "Set aside and label what stays at the old house", note: "Touch-up paint, appliance manuals, spare keys and anything else that belongs with the rental, so the movers don't pack it" },
-        { id: "floor-plan", cat: "movers", title: "Make a labeled floor plan of the new house", note: "Room names that match your box labels. Tape copies by the front door and in each room on move day" },
-        { id: "m-parking", cat: "movers", title: "Plan truck access at both houses", note: "The current house is a flag lot on a shared easement, so give the neighbors a heads-up about the 13th. Check whether the street needs a temporary no-parking permit" },
-        { id: "m-baby-box", cat: "kids", title: "Pack a newborn kit that never goes in the truck", note: "Diapers, wipes, feeding supplies, sleep sacks, bassinet sheets, white noise machine, a change of clothes" },
-        { id: "m-dog-box", cat: "dog", title: "Pack a dog kit", note: "Food, bowls, leash, bed, meds, poop bags and a favorite toy" },
-        { id: "m-first-night", cat: "packing", title: "Pack a first-night box for each person", note: "Toiletries, meds, chargers, pajamas, bedding, and a basic kitchen box with coffee" },
-        { id: "m-docs", cat: "packing", title: "Gather documents and small valuables to carry yourselves", note: "Passports, birth certificates, the lease, jewelry, laptops and hard drives" },
-        { id: "m-confirm", cat: "movers", title: "Confirm the movers 48 hours ahead", note: "Packing day and time, arrival window, crew size, payment method, and what they need from you" },
-        { id: "m-donate", cat: "sell", title: "Drop off donations and anything that didn't sell by Nov 9", note: "" },
-      ]},
-      { key: "self-move-days", title: "Self-move days", when: "Nov 10 – 12", why: "Carry over everything you're moving yourselves, room by room, so by Thursday night the only things left in the old house are for the movers. The beds stay for the movers, and the bassinet goes with you on Friday.", items: [
-        { id: "walkthrough", cat: "house", title: "Get the keys and photograph the empty house", note: "Every room, wall and floor, plus any existing damage, before anything comes in. Send the photos to the landlord" },
-        { id: "m-clean", cat: "house", title: "Wipe down the kitchen and bathrooms before unpacking", note: "" },
-        { id: "m-prep-rooms", cat: "kids", title: "Get the bedrooms ready for Friday night", note: "Hang blackout curtains or shades in the nursery and the older child's room, and put sheets, the white noise machine and a nightlight in each room" },
-        { id: "m-carry", cat: "packing", title: "Carry your boxes over room by room", note: "Drop each box in its labeled room at the new house, so nothing ends up buried under the movers' load" },
-        { id: "move-office", cat: "utilities", title: "Move and test the office", note: "Desk, monitors and network gear. Run a video call on the new internet before Friday" },
-        { id: "m-wine", cat: "packing", title: "Move the wine and fragile collection yourselves", note: "Short car trips, bottles kept on their sides, and straight into their new spot. Avoid leaving them in a cold car" },
-        { id: "move-valuables", cat: "packing", title: "Carry over art, documents and electronics", note: "Anything you'd hate to see on a moving truck" },
-        { id: "kids-rooms", cat: "kids", title: "Childproof the essentials", note: "Gates at the stairs, outlet covers, and anchors for anything tippable that's already in place" },
-        { id: "m-hazmat", cat: "packing", title: "Move paint, cleaning chemicals and propane yourselves", note: "Movers won't carry them. Leave any touch-up paint at the old house for rental prep" },
-        { id: "m-yard", cat: "dog", title: "Check the new yard and fence for gaps before the dog arrives", note: "" },
-        { id: "m-finish-pack", cat: "packing", title: "Have everything you're moving yourselves out of the old house by Thursday night", note: "Anything left is for the movers. The only exceptions are the bassinet, the newborn and dog kits, and what you need Friday morning" },
-      ]},
-      { key: "move-day", title: "Move day", when: "Fri Nov 13", why: "Clear the house of the older child and the dog, split up so someone is at each house, and check everything before the crew leaves.", items: [
-        { id: "move-day", cat: "kids", title: "Drop the older child at daycare and the dog at your friend's", note: "" },
-        { id: "m-crew-walk", cat: "movers", title: "Walk the crew lead through the old house", note: "Everything left gets packed and moved, except the items labeled to stay with the rental" },
-        { id: "m-split", cat: "movers", title: "Split up: one person at each house", note: "One at the old house to answer questions and watch the load, one at the new house directing rooms. The newborn stays with whoever is at the new house" },
-        { id: "m-bassinet", cat: "kids", title: "Take the bassinet and newborn kit over yourselves", note: "First thing, before the truck starts unloading" },
-        { id: "m-beds", cat: "movers", title: "Have the movers load the beds and bassinet last and unload them first", note: "Then ask them to reassemble the beds before anything else, so tonight's list starts from there" },
-        { id: "m-sweep", cat: "movers", title: "Walk the old house before the truck leaves", note: "Closets, cabinets, garage, attic, the yard and the side of the house" },
-        { id: "m-inventory", cat: "movers", title: "Check for damage before signing anything", note: "Note scratches or broken items on the paperwork. It's much harder to claim later" },
-        { id: "m-tip", cat: "movers", title: "Tip the crew", note: "Have cash ready, or ask whether a tip can go on the card" },
-      ]},
-      { key: "ready-by-bedtime", title: "Ready by bedtime", when: "Fri Nov 13 · night", ordered: true, why: "In priority order. The first four are what everyone needs to sleep safely tonight. Anything you don't get to can wait until Saturday.", items: [
-        { id: "n-bassinet", cat: "kids", title: "The newborn's sleep space", note: "Bassinet assembled with a fitted sheet only, sleep sack, white noise, and the nursery warm enough (68–72°F)" },
-        { id: "n-older-bed", cat: "kids", title: "The older child's bed and room", note: "Bed made, nightlight on, a few favorite things out, and anything tippable in that room anchored or moved out" },
-        { id: "n-gates", cat: "kids", title: "Childproofing for tonight", note: "Gates at the top and bottom of the stairs, and outlet covers in the rooms you'll use tonight" },
-        { id: "n-your-bed", cat: "house", title: "Your bed", note: "Assembled and made, with phone chargers next to it" },
-        { id: "n-feeding", cat: "kids", title: "Night feeding and changing setup", note: "Bottles or pump parts washed, formula or milk ready, and a changing spot with diapers and wipes near the nursery" },
-        { id: "n-bath", cat: "house", title: "One working bathroom", note: "Toilet paper, towels, a shower curtain, toiletries, meds and the kids' bath things" },
-        { id: "n-dog", cat: "dog", title: "The dog's spot", note: "Bed, water and food set out before pickup, with the leash by the door" },
-        { id: "n-kitchen", cat: "house", title: "Kitchen for the morning", note: "Coffee, breakfast, dish soap, trash bags and a few dishes. Order dinner in" },
-        { id: "n-daycare", cat: "house", title: "Tomorrow's basics", note: "Clothes for everyone, keys and wallet in one place, and the daycare bag if there's daycare" },
-        { id: "n-lock", cat: "house", title: "Lock up both houses", note: "Every door and window at the new house, and the old house locked with lights off" },
-      ]},
-      { key: "first-week-in", title: "First week in", when: "Nov 14 – 22", why: "Make the house work, finish childproofing, and update your address everywhere while it's fresh.", items: [
-        { id: "m-unpack", cat: "house", title: "Unpack in order: kitchen, bedrooms, bathrooms, then everything else", note: "" },
-        { id: "m-childproof-2", cat: "kids", title: "Finish childproofing", note: "Cabinet and drawer locks, window cord cleats, furniture anchors throughout, and a water heater set to 120°F or lower" },
-        { id: "m-baby-gear", cat: "kids", title: "Set up a baby station on each floor", note: "Changing supplies and a spot to set the baby down on each level saves a lot of stairs" },
-        { id: "m-address", cat: "paperwork", title: "Update your address everywhere", note: "Banks and cards, employers and payroll, insurance, the pediatrician, daycare, the vet, subscriptions and online stores" },
-        { id: "m-dmv", cat: "paperwork", title: "Update your driver's licenses and voter registration", note: "Washington asks for license address changes within 10 days, so by about Nov 20" },
-        { id: "m-dog-admin", cat: "paperwork", title: "Update the dog's pet license and microchip with the new address", note: "" },
-        { id: "m-boxes", cat: "packing", title: "Break down boxes and give them away or recycle them", note: "Ask whether the movers take their boxes and paper back" },
-        { id: "m-handoff", cat: "house", title: "Hand the old house over to rental prep", note: "Continue on the Rental tab" },
-      ]},
-    ],
-  },
-  rental: {
-    label: "rental",
-    cats: {"prep": "Prep & repairs", "city": "City & legal", "leasing": "Listing & lease", "money": "Money & insurance"},
-    dates: [["Move-out","Fri Nov 13"],["Prep","Nov 14 – 30"],["Listed","~early Dec"]],
-    intro: "Turning the current house into a long-term, unfurnished, self-managed rental after a paint, grout and trim refresh.",
-    open: [
-      "Utilities split: tenant pays all, or you keep water/sewer/garbage and bake it into rent",
-      "Rent price, once comps are pulled",
-    ],
-    phases: [
-      { key: "this-week", title: "This week", when: "Oct 21 – 26", why: "The lender, insurer and contractors need lead time before the house is empty.", items: [
-        { id: "lender-call", cat: "money", title: "Call the mortgage servicer about converting to a rental", note: "Confirm the owner-occupancy terms are satisfied and ask if they need notice" },
-        { id: "landlord-insurance", cat: "money", title: "Get a landlord (DP-3) insurance quote", note: "Plan to switch the day you move out. Homeowner policies usually don't cover a tenant-occupied house" },
-        { id: "contractor-quotes", cat: "prep", title: "Get quotes for paint, patching, grout and window trim", note: "Book the work for the week after you move out" },
-        { id: "book-clean", cat: "prep", title: "Book a deep clean for move-out week", note: "Includes inside appliances and windows" },
-        { id: "tax-prep", cat: "money", title: "Talk with your tax preparer about the conversion", note: "Depreciation, deductible prep costs, and how renting affects the home-sale exclusion window" },
-      ]},
-      { key: "rental-prep", title: "Rental prep", when: "Nov 14 – 30", why: "Empty house, refresh, then get compliant before you list.", items: [
-        { id: "paint", cat: "prep", title: "Paint and patch", note: "" },
-        { id: "grout-trim", cat: "prep", title: "Regrout and redo trim and caulk around the windows", note: "" },
-        { id: "deep-clean", cat: "prep", title: "Deep clean after the trades finish", note: "" },
-        { id: "detectors", cat: "prep", title: "Test smoke and carbon monoxide detectors", note: "Washington requires both in rentals" },
-        { id: "rrio-check", cat: "city", title: "Walk the house against the city's RRIO checklist", note: "Fix anything that would fail an inspection" },
-        { id: "rekey", cat: "prep", title: "Rekey or swap the locks", note: "" },
-        { id: "lead-disclosure", cat: "city", title: "Prepare a lead paint disclosure if the house was built before 1978", note: "Federal requirement, plus the EPA pamphlet" },
-        { id: "easement", cat: "leasing", title: "Pull out the shared easement terms for the flag lot", note: "Turn driveway, parking and access rules into lease house rules, and give the neighbors a heads-up" },
-        { id: "house-guide", cat: "prep", title: "Write a house guide", note: "Shutoffs, breaker panel, trash days, appliance manuals" },
-      ]},
-      { key: "get-compliant-and-list", title: "Get compliant and list", when: "Late Nov – Dec", why: "Seattle's rules shape screening and move-in money, so set these up before the listing goes live.", items: [
-        { id: "rrio-register", cat: "city", title: "Register the property with Seattle RRIO", note: "$126 for two years as of 2026" },
-        { id: "business-license", cat: "city", title: "Get a Seattle business license tax certificate", note: "" },
-        { id: "bank-accounts", cat: "money", title: "Open a separate account for rent and a trust account for the deposit", note: "" },
-        { id: "set-rent", cat: "leasing", title: "Set rent from comparable listings nearby", note: "Budget 35–45 days to lease, longer over the holidays" },
-        { id: "screening-criteria", cat: "leasing", title: "Write and publish screening criteria with the listing", note: "First-in-time rule: offer to the first applicant who meets them. No criminal history screening under Fair Chance" },
-        { id: "photos", cat: "leasing", title: "Take listing photos once the house is clean and empty", note: "" },
-        { id: "rent-tool", cat: "leasing", title: "Pick a rent-collection and screening tool", note: "" },
-        { id: "lease", cat: "leasing", title: "Draft a Washington-compliant lease with Seattle's required notices", note: "Include the city's tenant information packet" },
-        { id: "deposit-cap", cat: "leasing", title: "Cap deposit plus move-in fees at one month's rent", note: "Tenants can pay these in installments" },
-        { id: "move-in-checklist", cat: "leasing", title: "Complete a signed move-in condition checklist with photos", note: "Required to keep any of the deposit later" },
-      ]},
-      { key: "once-a-tenant-is-in", title: "Once a tenant is in", when: "Ongoing", why: "Calendar these so they don't sneak up.", items: [
-        { id: "insurance-switch", cat: "money", title: "Switch the insurance to the landlord policy if not done already", note: "" },
-        { id: "rrio-renewal", cat: "city", title: "Calendar RRIO renewal two years out", note: "" },
-        { id: "rent-increase-rules", cat: "city", title: "Note rent-increase rules", note: "No increase in the first 12 months. State law caps increases and Seattle requires long written notice" },
-        { id: "track-expenses", cat: "money", title: "Track every rental expense for taxes", note: "" },
-      ]},
-    ],
-  },
-};
-
-let mvSaveTimer = null, mvSaving = false;
-// Per-list view state: owner filter, category filter, hide done
-const mvView = { move: { owner:'all', cat:'all', hide:false }, rental: { owner:'all', cat:'all', hide:false } };
-// Open note editors: task id -> unsaved draft text. Survives re-renders and data reloads.
-const mvEditing = {};
-const mvEsc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-
-// Build each panel's static shell once: key dates, progress, filters, list, open questions
-function buildChecklistPanels() {
-  Object.entries(CHECKLISTS).forEach(([key, cl]) => {
-    const panel = document.querySelector(`.mv-panel[data-list="${key}"]`);
-    const ownerChips = [['all','Everyone'], ...Object.entries(MOVE_OWNERS), ['none','Unassigned']]
-      .map(([k, n], i) => `<button class="mv-chip" data-filter-owner="${k}" aria-pressed="${i === 0}">${n}</button>`).join('');
-    const catChips = [['all','All'], ...Object.entries(cl.cats)]
-      .map(([k, n], i) => `<button class="mv-chip" data-filter-cat="${k}" aria-pressed="${i === 0}">${mvEsc(n)}</button>`).join('');
-    panel.innerHTML = `
-      <div class="mv-dates">${cl.dates.map(([l, d]) => `<span>${l} <b>${d}</b></span>`).join('')}</div>
-      <p class="mv-intro">${mvEsc(cl.intro)}</p>
-      <div class="mv-prog"><div class="mv-track"><div class="mv-fill" data-role="fill"></div></div><span class="mv-count" data-role="count">—</span></div>
-      <div class="mv-filters">
-        <span class="lbl">Owner</span>${ownerChips}
-        <label class="mv-hide"><input type="checkbox" id="mvHide-${key}" data-filter-hide> Hide done</label>
-      </div>
-      <div class="mv-filters"><span class="lbl">Type</span>${catChips}</div>
-      <div data-role="list"></div>
-      ${cl.open.length ? `<div class="mv-open"><h3>Still open</h3><ul>${cl.open.map(o => `<li>${mvEsc(o)}</li>`).join('')}</ul></div>` : ''}`;
-  });
-}
-
-function mvNoteHtml(id, st) {
-  if (id in mvEditing) {
-    return `<div class="mv-editor">
-      <textarea id="mvNote-${id}" data-note-id="${id}" aria-label="Status note" placeholder="Where this stands: who you talked to, quotes, what's next…">${mvEsc(mvEditing[id])}</textarea>
-      <div class="mv-editor-row">
-        <button type="button" class="btn btn-primary" data-note-save="${id}">Save note</button>
-        <button type="button" class="btn" data-note-cancel="${id}">Cancel</button>
-        <span class="mv-editor-hint">Markdown works · ⌘/Ctrl + Enter to save · Esc to cancel</span>
-      </div>
-    </div>`;
-  }
-  const text = (st.statusNote || '').trim();
-  if (!text) return `<button type="button" class="mv-note-btn" data-note-edit="${id}">+ Add note</button>`;
-  const when = st.noteAt
-    ? `<span class="mv-status-when">Updated ${new Date(st.noteAt).toLocaleString(undefined, { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' })}</span>` : '';
-  return `<div class="mv-status"><div class="md">${mdToHtml(text)}</div>${when}</div>
-    <button type="button" class="mv-note-btn" data-note-edit="${id}">Edit note</button>`;
-}
-
-function openNoteEditor(id) {
-  mvEditing[id] = (moveState[id] || {}).statusNote || '';
-  renderMove();
-  const ta = document.getElementById('mvNote-' + id);
-  if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
-}
-
-function closeNoteEditor(id) {
-  delete mvEditing[id];
-  renderMove();
-  const b = document.querySelector(`[data-note-edit="${id}"]`);
-  if (b) b.focus();
-}
-
-async function saveNote(id) {
-  const text = (mvEditing[id] ?? '').trim();
-  const prev = ((moveState[id] || {}).statusNote || '').trim();
-  delete mvEditing[id];
-  if (text === prev) { closeNoteEditor(id); return; }
-  setMoveTask(id, { statusNote: text, noteAt: text ? new Date().toISOString() : null });
-  const b = document.querySelector(`[data-note-edit="${id}"]`);
-  if (b) b.focus();
-  clearTimeout(mvSaveTimer);
-  await flushMove();
-  showToast(moveDirty[id] ? 'Note kept on this page — not saved yet' : (text ? 'Note saved' : 'Note removed'));
-}
-
-function setMoveTask(id, patch) {
-  const cur = moveState[id] || { done:false, owner:null };
-  const next = { ...cur, ...patch, updatedAt: new Date().toISOString() };
-  if ('done' in patch) next.doneAt = patch.done ? next.updatedAt : null;
-  moveState[id] = next;
-  moveDirty[id] = next;
-  renderMove();
-  clearTimeout(mvSaveTimer);
-  mvSaveTimer = setTimeout(flushMove, 600);
-}
-
-// Saves pending checklist changes. If the file changed underneath us (the other
-// person saved), reload, re-apply our pending changes on top, and try once more.
-async function flushMove(retry = true) {
-  if (mvSaving) { clearTimeout(mvSaveTimer); mvSaveTimer = setTimeout(flushMove, 600); return; }
-  if (!Object.keys(moveDirty).length) return;
-  mvSaving = true;
-  const sent = { ...moveDirty };
-  setSyncStatus('Saving checklist…', 'syncing');
-  try {
-    await saveToGitHub();
-    for (const k in sent) if (moveDirty[k] === sent[k]) delete moveDirty[k];
-  } catch (e) {
-    if (retry) {
-      mvSaving = false;
-      await loadFromGitHub();
-      return flushMove(false);
-    }
-    setSyncStatus(`Checklist not saved — ${e.message}. Changes are kept on this page; try again.`, 'error');
-  }
-  mvSaving = false;
-  if (Object.keys(moveDirty).length && retry) { clearTimeout(mvSaveTimer); mvSaveTimer = setTimeout(flushMove, 600); }
-}
-
-// ── Added tasks ──
-// Tasks added on the site live in moveState next to everyone's checkmarks:
-//   moveState[id] = { custom: { list, phase, cat, title, note, createdAt }, done, owner, statusNote, … }
-// so they sync and merge exactly like any other task change. Once added they
-// can be ticked off and noted, but not edited or removed.
-const mvAdding = {};   // "list:phaseKey" -> open form draft { title, note, cat, owner, error }
-
-function customTasksFor(listKey, cl) {
-  const keys = new Set(cl.phases.map(p => p.key));
-  const last = cl.phases[cl.phases.length - 1].key;
-  const firstCat = Object.keys(cl.cats)[0];
-  const by = {};
-  Object.entries(moveState).forEach(([id, st]) => {
-    const c = st && st.custom;
-    if (!c || c.list !== listKey) return;
-    const ph = keys.has(c.phase) ? c.phase : last;
-    (by[ph] = by[ph] || []).push({ id, custom: true, createdAt: c.createdAt || '',
-      cat: cl.cats[c.cat] ? c.cat : firstCat, title: c.title || 'Untitled task', note: c.note || '' });
-  });
-  Object.values(by).forEach(arr => arr.sort((x, y) => String(x.createdAt).localeCompare(String(y.createdAt))));
-  return by;
-}
-
-function addFormHtml(listKey, cl, phaseKey) {
-  const fk = listKey + ':' + phaseKey, d = mvAdding[fk];
-  if (!d) return `<button type="button" class="mv-add-btn" data-add-open="${fk}">+ Add task</button>`;
-  const fid = `mvAdd-${listKey}-${phaseKey}`;
-  const cats = Object.entries(cl.cats)
-    .map(([k, n]) => `<option value="${k}"${d.cat === k ? ' selected' : ''}>${mvEsc(n)}</option>`).join('');
-  const owners = [['', 'Unassigned'], ...Object.entries(MOVE_OWNERS)]
-    .map(([k, n]) => `<option value="${k}"${d.owner === k ? ' selected' : ''}>${n}</option>`).join('');
-  return `<div class="mv-add-form">
-    <label class="mv-add-lbl" for="${fid}-title">New task</label>
-    <input type="text" id="${fid}-title" data-add-field="title" data-fk="${fk}" value="${mvEsc(d.title)}" placeholder="What needs to happen" maxlength="160" autocomplete="off">
-    ${d.error ? `<div class="mv-add-err" role="alert">${mvEsc(d.error)}</div>` : ''}
-    <textarea id="${fid}-note" data-add-field="note" data-fk="${fk}" rows="2" placeholder="Details (optional, markdown works)">${mvEsc(d.note)}</textarea>
-    <div class="mv-add-row">
-      <label for="${fid}-cat">Type</label>
-      <select id="${fid}-cat" data-add-field="cat" data-fk="${fk}">${cats}</select>
-      <label for="${fid}-owner">Owner</label>
-      <select id="${fid}-owner" data-add-field="owner" data-fk="${fk}">${owners}</select>
-    </div>
-    <div class="mv-editor-row">
-      <button type="button" class="btn btn-primary" data-add-save="${fk}">Add task</button>
-      <button type="button" class="btn" data-add-cancel="${fk}">Cancel</button>
-      <span class="mv-editor-hint">Added tasks can be ticked off and noted, but not edited or removed</span>
-    </div>
-  </div>`;
-}
-
-function openAddForm(fk) {
-  const [listKey, phaseKey] = fk.split(':');
-  const cl = CHECKLISTS[listKey], v = mvView[listKey];
-  // Default type: the active type filter, else the most common type in this phase
-  const tally = {};
-  ((cl.phases.find(p => p.key === phaseKey) || {}).items || []).forEach(it => { tally[it.cat] = (tally[it.cat] || 0) + 1; });
-  const common = Object.keys(tally).sort((a, b) => tally[b] - tally[a])[0];
-  mvAdding[fk] = { title: '', note: '', owner: '', error: '',
-    cat: v.cat !== 'all' ? v.cat : (common || Object.keys(cl.cats)[0]) };
-  renderMove();
-  const t = document.querySelector(`[data-add-field="title"][data-fk="${fk}"]`);
-  if (t) t.focus();
-}
-
-function closeAddForm(fk) {
-  delete mvAdding[fk];
-  renderMove();
-  const b = document.querySelector(`[data-add-open="${fk}"]`);
-  if (b) b.focus();
-}
-
-async function saveAddForm(fk) {
-  const d = mvAdding[fk];
-  if (!d) return;
-  const title = d.title.trim();
-  if (!title) {
-    d.error = 'Add a title for the task.';
-    renderMove();
-    const t = document.querySelector(`[data-add-field="title"][data-fk="${fk}"]`);
-    if (t) t.focus();
-    return;
-  }
-  const [list, phase] = fk.split(':');
-  const id = 'c-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  delete mvAdding[fk];
-  setMoveTask(id, {
-    custom: { list, phase, cat: d.cat, title, note: d.note.trim(), createdAt: new Date().toISOString() },
-    done: false, owner: d.owner || null,
-  });
-  const b = document.querySelector(`[data-add-open="${fk}"]`);
-  if (b) b.focus();
-  clearTimeout(mvSaveTimer);
-  await flushMove();
-  showToast(moveDirty[id] ? 'Task kept on this page — not saved yet' : 'Task added');
-}
-
-// Renders both checklists (only the visible one matters, but both stay current)
-function renderMove() {
-  if (!document.querySelector('.mv-panel [data-role="list"]')) return;
-  // Keep the cursor where it was if a form field or note is being typed in
-  const act = document.activeElement;
-  const keep = act && act.id && act.closest && act.closest('.mv-panel') && act.matches('textarea, input[type=text], select')
-    ? { id: act.id, s: act.selectionStart, e: act.selectionEnd } : null;
-  Object.entries(CHECKLISTS).forEach(([key, cl]) => {
-    const panel = document.querySelector(`.mv-panel[data-list="${key}"]`);
-    const v = mvView[key];
-    const custom = customTasksFor(key, cl);
-    const filtering = v.owner !== 'all' || v.cat !== 'all';
-    let total = 0, done = 0, html = '';
-    cl.phases.forEach(p => {
-      let pt = 0, pd = 0, rows = '';
-      p.items.concat(custom[p.key] || []).forEach((it, idx) => {
-        const st = moveState[it.id] || {};
-        const isDone = !!st.done, owner = st.owner || null;
-        total++; pt++; if (isDone) { done++; pd++; }
-        if (v.cat !== 'all' && it.cat !== v.cat) return;
-        if (v.owner === 'none' ? owner
-            : (v.owner !== 'all' && owner !== v.owner && !(owner === 'both' && (v.owner === 'matt' || v.owner === 'lauren')))) return;
-        if (v.hide && isDone) return;
-        const cb = 'mv-' + it.id;
-        const ownerBtns = Object.entries(MOVE_OWNERS).map(([k, name]) =>
-          `<button type="button" data-id="${it.id}" data-owner="${k}" aria-pressed="${owner === k}" title="Assign to ${name}">${name}</button>`).join('');
-        const fmt = d => new Date(d).toLocaleDateString(undefined, { month:'short', day:'numeric' });
-        const metaBits = [];
-        if (it.custom && it.createdAt) metaBits.push(`Added ${fmt(it.createdAt)}`);
-        if (isDone && st.doneAt) metaBits.push(`Done ${fmt(st.doneAt)}`);
-        const meta = metaBits.length ? `<div class="mv-meta">${metaBits.join(' · ')}</div>` : '';
-        rows += `<div class="mv-item${isDone ? ' done' : ''}">
-          <input type="checkbox" id="${cb}" data-id="${it.id}" ${isDone ? 'checked' : ''}>
-          <div class="mv-body"><label class="mv-title" for="${cb}">${p.ordered ? `<span class="mv-rank">${idx + 1}</span>` : ''}${mvEsc(it.title)}</label><span class="mv-tag">${mvEsc(cl.cats[it.cat])}</span>
-            ${it.note ? (it.custom ? `<div class="mv-note md">${mdToHtml(it.note)}</div>` : `<div class="mv-note">${mvEsc(it.note)}</div>`) : ''}${meta}${mvNoteHtml(it.id, st)}</div>
-          <div class="mv-owner" role="group" aria-label="Owner">${ownerBtns}</div>
-        </div>`;
-      });
-      const formOpen = (key + ':' + p.key) in mvAdding;
-      if (!rows && filtering && !formOpen) return;
-      html += `<div class="section-hdr mv-phase-hdr"><span>${p.title}</span><span class="when">${p.when}</span><span class="pc">${pd}/${pt}</span></div>
-        <div class="mv-why">${mvEsc(p.why)}</div>${rows}${addFormHtml(key, cl, p.key)}`;
-    });
-    panel.querySelector('[data-role="list"]').innerHTML = html || '<div class="empty-state">Nothing matches these filters.</div>';
-    panel.querySelector('[data-role="fill"]').style.width = (total ? done / total * 100 : 0) + '%';
-    panel.querySelector('[data-role="count"]').textContent = `${done} / ${total} ${cl.label} tasks done`;
-  });
-  if (keep) {
-    const el = document.getElementById(keep.id);
-    if (el) {
-      el.focus();
-      if (keep.s != null && el.setSelectionRange) { try { el.setSelectionRange(keep.s, keep.e); } catch (e) {} }
-    }
-  }
-}
-
-buildChecklistPanels();
-renderMove();
-document.querySelectorAll('.mv-panel').forEach(panel => {
-  const key = panel.dataset.list, v = mvView[key];
-  panel.addEventListener('change', e => {
-    if (e.target.matches('[data-filter-hide]')) { v.hide = e.target.checked; return renderMove(); }
-    const cb = e.target.closest('input[type=checkbox][data-id]');
-    if (cb) setMoveTask(cb.dataset.id, { done: cb.checked });
-  });
-  panel.addEventListener('input', e => {
-    const ta = e.target.closest('textarea[data-note-id]');
-    if (ta) mvEditing[ta.dataset.noteId] = ta.value;
-    const af = e.target.closest('[data-add-field]');
-    if (af && mvAdding[af.dataset.fk]) mvAdding[af.dataset.fk][af.dataset.addField] = af.value;
-  });
-  panel.addEventListener('keydown', e => {
-    const af = e.target.closest('[data-add-field]');
-    if (af) {
-      const enter = e.key === 'Enter' && (af.tagName === 'INPUT' || e.metaKey || e.ctrlKey);
-      if (enter) { e.preventDefault(); saveAddForm(af.dataset.fk); }
-      else if (e.key === 'Escape') { e.preventDefault(); closeAddForm(af.dataset.fk); }
-      return;
-    }
-    const ta = e.target.closest('textarea[data-note-id]');
-    if (!ta) return;
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); saveNote(ta.dataset.noteId); }
-    else if (e.key === 'Escape') { e.preventDefault(); closeNoteEditor(ta.dataset.noteId); }
-  });
-  panel.addEventListener('click', e => {
-    const fo = e.target.closest('[data-filter-owner]');
-    if (fo) {
-      v.owner = fo.dataset.filterOwner;
-      panel.querySelectorAll('[data-filter-owner]').forEach(x => x.setAttribute('aria-pressed', x === fo));
-      return renderMove();
-    }
-    const fc = e.target.closest('[data-filter-cat]');
-    if (fc) {
-      v.cat = fc.dataset.filterCat;
-      panel.querySelectorAll('[data-filter-cat]').forEach(x => x.setAttribute('aria-pressed', x === fc));
-      return renderMove();
-    }
-    const ao = e.target.closest('[data-add-open]');
-    if (ao) return openAddForm(ao.dataset.addOpen);
-    const as = e.target.closest('[data-add-save]');
-    if (as) return saveAddForm(as.dataset.addSave);
-    const ac = e.target.closest('[data-add-cancel]');
-    if (ac) return closeAddForm(ac.dataset.addCancel);
-    const ed = e.target.closest('[data-note-edit]');
-    if (ed) return openNoteEditor(ed.dataset.noteEdit);
-    const sv = e.target.closest('[data-note-save]');
-    if (sv) return saveNote(sv.dataset.noteSave);
-    const cn = e.target.closest('[data-note-cancel]');
-    if (cn) return closeNoteEditor(cn.dataset.noteCancel);
-    const b = e.target.closest('.mv-owner button');
-    if (!b) return;
-    const cur = (moveState[b.dataset.id] || {}).owner || null;
-    setMoveTask(b.dataset.id, { owner: cur === b.dataset.owner ? null : b.dataset.owner });
-  });
-});
-window.addEventListener('beforeunload', e => { if (Object.keys(moveDirty).length || Object.keys(mvEditing).length || Object.values(mvAdding).some(d => d.title.trim() || d.note.trim())) { e.preventDefault(); e.returnValue = ''; } });
 </script>
 </body>
 </html>

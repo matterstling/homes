@@ -56,17 +56,9 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-## Move and Rental tabs
+## Move + Rental tab
 
-Two shared checklists for the November 2026 move: **Move** (getting into the leased house) and **Rental** (turning the current house into a long-term rental). Both sit behind the same password and sync through the same Worker and `data.json`.
+The first tab embeds the move and rental tracker, a Google Sheet ("Seattle Move + Rental"), in an iframe. The sheet's URL is `SHEET_EMBED_URL` in the `<script>` block, and the iframe only gets its `src` after the password is entered.
 
-- Both lists store task state in one place, under `move.tasks` in `data.json`, keyed by task id: `{ done, owner, doneAt, statusNote, noteAt, updatedAt }`. Ids are unique across both lists
-- Tasks live in `CHECKLISTS.move` and `CHECKLISTS.rental` in the `<script>` block, each with its own key dates, intro, categories, phases and "Still open" items. Titles and notes can change freely, and a task can move between lists, but changing an `id` drops that task's saved state
-- Owners are `matt`, `lauren` or `both` (edit `MOVE_OWNERS` to change names); tap an owner again to unassign. Tasks owned by Both also show under the Matt and Lauren filters
-- Each task has one category (`cat`), defined per list in `cats`. Each tab has its own filters: owner, type (category) and Hide done
-- A phase with `ordered: true` shows numbered priorities (used for the move-day "Ready by bedtime" list)
-- **+ Add task** at the end of each phase adds a task to that phase: title, optional details, type and owner. Added tasks are stored in `move.tasks` like everything else, with a `custom: { list, phase, cat, title, note, createdAt }` field, and sync and merge the same way. They can be ticked off and noted, but there's deliberately no way to edit or remove them (or the built-in tasks) from the page. Phases have a stable `key` so added tasks stay put if a phase title changes; if a phase is removed, its added tasks move to the list's last phase
-- Each task has a status note: **+ Add note** / **Edit note** opens an editor, **Save note** (or ⌘/Ctrl + Enter) saves, **Cancel** (or Esc) discards. Saving an empty note removes it. Unsaved drafts survive re-renders, and the page warns before closing with one open
-- Notes render as markdown: task status notes, the details on added tasks, and the per-home notes on Compare cards. `mdToHtml` escapes the text first, so a note can't inject markup. It handles headings, bold, italics, strikethrough, inline code and code blocks, links and bare URLs, bulleted, numbered and `- [ ]` checklists, quotes and rules. Notes are stored as the raw text
-- If two people save at once, the page reloads the latest file, re-applies its pending changes and saves again
-- Saving is blocked if the data failed to load, so a bad load can't overwrite saved homes
+- Access follows the sheet's own Google sharing settings, so it stays restricted to the people it's shared with. Viewers need to be signed into Google in the same browser. Browsers that block third-party cookies (Safari, by default) may show a Google sign-in prompt inside the frame, so the tab also has an **Open in Google Sheets** button
+- The tracker used to be built into this page (Oct 21–22, 2026). Its last saved state is still in `data.json` under `move`, which the page now leaves untouched when it saves homes
