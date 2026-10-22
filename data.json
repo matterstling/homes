@@ -441,6 +441,13 @@
         },
         "updatedAt": "2026-10-22T05:17:47.714Z",
         "doneAt": null
+      },
+      "landlord-insurance": {
+        "done": false,
+        "owner": null,
+        "statusNote": "For the landlord policy…\n• $900K-1.1M dwelling replacement cost\n• 12-month loss-of-rent\n• $500K-1M liability (whatever is maximum)\n• $25K for our assets in house (blinds + appliances)\n• Water and sewer backup endorsement (see how much it is)\n• $2,500 or $5,000 deductible (evaluate monthly premium savings)\n\nFor the umbrella policy:\n• I confirmed that the umbrella policy covers all of our assets, but a property we are renting out needs to be explicitly added.\n• I also misread some other info earlier, and it does not apply to the house we’re renting other than liability (guest slips and falls, etc.)\n• We may be OK with just a $1M policy, but see how much a $2M policy would be and we can decide",
+        "noteAt": "2026-10-22T17:14:05.145Z",
+        "updatedAt": "2026-10-22T17:14:05.145Z"
       }
     }
   }
