@@ -425,6 +425,20 @@
         "statusNote": "[ME] I'll ask Claude for more clarity on this one",
         "noteAt": "2026-10-22T05:16:21.497Z",
         "updatedAt": "2026-10-22T05:16:21.497Z"
+      },
+      "c-mvj3awqpxc9p": {
+        "done": false,
+        "owner": "matt",
+        "custom": {
+          "list": "move",
+          "phase": "book-and-decide",
+          "cat": "paperwork",
+          "title": "Finalize and sign the lease",
+          "note": "Confirm the language around the early-termination clause and sign and notarize the lease",
+          "createdAt": "2026-10-22T05:17:47.713Z"
+        },
+        "updatedAt": "2026-10-22T05:17:47.714Z",
+        "doneAt": null
       }
     }
   }
