@@ -260,6 +260,11 @@
         "statusNote": "Can we use the Redfin photos so we can list it sooner?",
         "noteAt": "2026-10-21T16:10:14.300Z",
         "updatedAt": "2026-10-21T16:10:14.300Z"
+      },
+      "book-movers": {
+        "done": false,
+        "owner": "matt",
+        "updatedAt": "2026-10-22T04:42:02.957Z"
       }
     }
   }
