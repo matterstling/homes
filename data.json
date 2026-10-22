@@ -290,6 +290,11 @@
         "done": false,
         "owner": "lauren",
         "updatedAt": "2026-10-22T04:42:26.405Z"
+      },
+      "m-self-list": {
+        "done": false,
+        "owner": "both",
+        "updatedAt": "2026-10-22T04:42:28.489Z"
       }
     }
   }
